@@ -1069,5 +1069,4 @@ def sfz2():
 
 if __name__ == "__main__":
     delete_save()
-    character["Coordinates"] = [-967, 10]
     main()
