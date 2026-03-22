@@ -4,7 +4,7 @@ from PENTAutilities import character, enemies, bosses, buffs, debuffs
 from PENTAutilities import enemy_moves, malkhut_moves, yesod_moves, hod_moves, netzach_moves
 from PENTAmusic import AudioManager
 from PENTAitems import get_loot, menu
-from PENTAitems import weapons, armor, items
+from PENTAitems import weapons, armor, items    
 import time
 import copy
 import sys
@@ -192,9 +192,8 @@ def linkage(mana_cost, battle_character):
                           f"The majesty of Kingship resonates within you."])
         encounter_text(x)
         sefirot_links.append("Malkhut (m)")
-        input_to_continue()
 
-    elif Yesod(mana_cost):
+    if Yesod(mana_cost):
         x = random.choice([f"The powers of Foundation flows through you.",
                           f"You feel the stability of Foundation within you.",
                           f"The essence of Foundation empowers you.",
@@ -209,10 +208,10 @@ def linkage(mana_cost, battle_character):
         encounter_text("Astral Convergence has temporarily increased your health by 50%.")
         battle_character["Health"] = battle_character["Health"] * 1.5
         sefirot_links.append("Yesod (y)")
-        input_to_continue()
 
 
-    elif Hod(mana_cost):
+
+    if Hod(mana_cost):
         x = random.choice([f"The powers of Glory flows through you.",
                           f"The brilliance of Glory shines within you.",
                           f"You feel the radiance of Glory empowering you.",
@@ -228,10 +227,9 @@ def linkage(mana_cost, battle_character):
         encounter_text("Astral Convergence has temporarily increased your remaning mana by 50%.")
         battle_character["Mana"] = battle_character["Mana"] * 1.5
         sefirot_links.append("Hod (h)")
-        input_to_continue()
 
 
-    elif Netzach(mana_cost):
+    if Netzach(mana_cost):
         x = random.choice([f"The powers of Eternity flows through you.",
                             f"You feel the endurance of Eternity within you.",
                             f"The essence of Eternity empowers you.",
@@ -249,11 +247,10 @@ def linkage(mana_cost, battle_character):
         encounter_text("Astral Convergence has temporarily increased your strength by 50%.")
         battle_character["Strength"] = battle_character["Strength"] * 1.5
         sefirot_links.append("Netzach (n)")
-        input_to_continue()
 
 
-    elif Tiferet(mana_cost):
-        if Yesod(mana_cost) or Hod(mana_cost) or Netzach(mana_cost):
+    if Tiferet(mana_cost):
+        if "Yesod (y)" in sefirot_links or "Hod (h)" in sefirot_links or "Netzach (n)" in sefirot_links:
             if character["Strength"] >= 500:
                 x = random.choice([f"The powers of Beauty flows through you.",
                                   f"The radiance of Beauty illuminates your soul.",
@@ -269,14 +266,13 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Beauty uplifts your soul.",
                                   f"You are embraced by the essence of Beauty."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your remaining mana by 50%.")
+                encounter_text("Astral Convergence has temporarily increased your mana by 50%.")
                 battle_character["Mana"] = battle_character["Mana"] * 1.5
                 sefirot_links.append("Tiferet (t)")
-                input_to_continue()
 
 
-    elif Chesed(mana_cost):
-        if Yesod(mana_cost) or Hod(mana_cost) or Netzach(mana_cost):
+    if Chesed(mana_cost):
+        if "Yesod (y)" in sefirot_links or "Hod (h)" in sefirot_links or "Netzach (n)" in sefirot_links:
             if character["Strength"] >= 500:
                 x = random.choice([f"The powers of Kindness flows through you.",
                                   f"The radiance of Kindness illuminates your soul.",
@@ -295,11 +291,10 @@ def linkage(mana_cost, battle_character):
                 encounter_text("Astral Convergence has temporarily increased your health by 50%.")
                 battle_character["Health"] = battle_character["Health"] * 1.5
                 sefirot_links.append("Chesed (c)")
-                input_to_continue()
 
 
-    elif Gevurah(mana_cost):
-        if Yesod(mana_cost) or Hod(mana_cost) or Netzach(mana_cost):
+    if Gevurah(mana_cost):
+        if "Yesod (y)" in sefirot_links or "Hod (h)" in sefirot_links or "Netzach (n)" in sefirot_links:
             if character["Strength"] >= 500:
                 x = random.choice([f"The powers of Severity flows through you.",
                                   f"The radiance of Severity illuminates your soul.",
@@ -318,11 +313,10 @@ def linkage(mana_cost, battle_character):
                 encounter_text("Astral Convergence has temporarily increased your strength by 50%.")
                 battle_character["Strength"] = battle_character["Strength"] * 1.5
                 sefirot_links.append("Gevurah (g)")
-                input_to_continue()
     
 
-    elif Chokmah(mana_cost):
-        if Tiferet(mana_cost) or Chesed(mana_cost) or Gevurah(mana_cost):
+    if Chokmah(mana_cost):
+        if "Tiferet (t)" in sefirot_links or "Chesed (c)" in sefirot_links or "Gevurah (g)" in sefirot_links:
             if character["Strength"] >= 1000:
                 x = random.choice([f"The powers of Wisdom flows through you.",
                                   f"The radiance of Wisdom illuminates your soul.",
@@ -338,14 +332,13 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Wisdom uplifts your soul.",
                                   f"You are embraced by the essence of Wisdom."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your remaining mana by 100%")
+                encounter_text("Astral Convergence has temporarily increased your mana by 100%")
                 battle_character["Mana"] = battle_character["Mana"] * 2
-                sefirot_links.append("Chokmah (hok)")
-                input_to_continue()
+                sefirot_links.append("Chokmah (ch)")
         
 
-    elif Binah(mana_cost):
-        if Tiferet(mana_cost) or Chesed(mana_cost) or Gevurah(mana_cost):
+    if Binah(mana_cost):
+        if "Tiferet (t)" in sefirot_links or "Chesed (c)" in sefirot_links or "Gevurah (g)" in sefirot_links:
             if character["Strength"] >= 1000:
                 x = random.choice([f"The powers of Understanding flows through you.",
                                   f"The radiance of Understanding illuminates your soul.",
@@ -364,11 +357,10 @@ def linkage(mana_cost, battle_character):
                 encounter_text("Astral Convergence has temporarily increased your remaining mana by 100%")
                 battle_character["Health"] = battle_character["Mana"] * 2
                 sefirot_links.append("Binah (b)")
-                input_to_continue()
         
 
-    elif Keter(mana_cost):
-        if Tiferet(mana_cost) or Chesed(mana_cost) or Gevurah(mana_cost):
+    if Keter(mana_cost):
+        if "Tiferet (t)" in sefirot_links or "Chesed (c)" in sefirot_links or "Gevurah (g)" in sefirot_links:
             if character["Strength"] >= 1500:
                 x = random.choice([f"The powers of the Crown flows through you.",
                                   f"The radiance of the Crown illuminates your soul.",
@@ -389,11 +381,10 @@ def linkage(mana_cost, battle_character):
                 battle_character["Strength"] = battle_character["Strength"] * 2
                 battle_character["Health"] = battle_character["Health"] * 2
                 sefirot_links.append("Keter (k)")
-                input_to_continue()
         
 
-    elif Eloki(mana_cost):
-        if Keter(mana_cost):
+    if Eloki(mana_cost):
+        if "Keter (k)" in sefirot_links:
             if character["Strength"] >= 3000:
                 encounter_text("The powers of Divinity flows through you.")
                 encounter_text("You have surpassed the limits of the Sefirots.")
@@ -402,7 +393,6 @@ def linkage(mana_cost, battle_character):
                 battle_character["Strength"] = battle_character["Strength"] * 55555
                 battle_character["Mana"] = battle_character["Mana"] * 55555
                 sefirot_links.append("Eloki (elo)")
-                input_to_continue()
     
     type_text("Astral Convergence complete.")
     return battle_character
@@ -414,6 +404,7 @@ def linkage(mana_cost, battle_character):
 def astral_convergence(battle_character):
     clear()
     a = question_input("Input any key to activate the {EX} rank skill {Astral Convergence}: ")
+    clear()
     gibtext("The Tree of Life appears above you,")
     if character["Mana"] > 3000:
         gibtext("all ten Sefirot nodes radiating with immense power.")
@@ -426,6 +417,8 @@ def astral_convergence(battle_character):
     gibtext("'May the stars align, and let the Blessing of the Gods be with you.'")
     gibtext("Astral Convergence has been activated.")
     encounter_text(f"You have {battle_character["Mana"]} mana available.")
+    input_to_continue()
+    clear()
     
     while True:
         x = random.choice([f"How much mana would you like to invest into Astral Convergence? (Enter a number): ",
@@ -508,6 +501,7 @@ def astral_convergence(battle_character):
 
 
 def player_turn(battle_character):
+    global character
     global battle_enemy_stat_list
     global sefirot_links
     
@@ -522,7 +516,7 @@ def player_turn(battle_character):
         sefirot_links.append("malkhut")
         sefirot_links.append("mal")
 
-    elif "Yesod (y)" in sefirot_links:
+    if "Yesod (y)" in sefirot_links:
         yesod_moves_keys = list(yesod_moves.keys())
         random.shuffle(yesod_moves_keys)
         yesod_move_list = []
@@ -531,7 +525,7 @@ def player_turn(battle_character):
         sefirot_links.append("yesod")
         sefirot_links.append("yes")
     
-    elif "Hod (h)" in sefirot_links:
+    if "Hod (h)" in sefirot_links:
         hod_moves_keys = list(hod_moves.keys())
         random.shuffle(hod_moves_keys)
         hod_move_list = []
@@ -539,7 +533,7 @@ def player_turn(battle_character):
         sefirot_links.append("h")
         sefirot_links.append("hod")
 
-    elif "Netzach (n)" in sefirot_links:
+    if "Netzach (n)" in sefirot_links:
         netzach_moves_keys = list(netzach_moves.keys())
         random.shuffle(netzach_moves_keys)
         netzach_move_list = []
@@ -551,18 +545,19 @@ def player_turn(battle_character):
 
 
     while True:
+        clear()
         encounter_text("Sefirot Links Active:")
         print("")
         if "malkhut" in sefirot_links:
             encounter_text("Malkhut (m)")
-        elif "yesod" in sefirot_links:
+        if "yesod" in sefirot_links:
             encounter_text("Yesod (y)")
-        elif "hod" in sefirot_links:
+        if "hod" in sefirot_links:
             encounter_text("Hod (h)")
-        elif "netzach" in sefirot_links:
+        if "netzach" in sefirot_links:
             encounter_text("Netzach (n)")
 
-
+        print("")
         sefirot_decision = question_input("Choose your Sefirot: ").strip().lower()
         
         if sefirot_decision == "menu":
@@ -577,11 +572,10 @@ def player_turn(battle_character):
                 clear()
                 temp_list = []
                 encounter_text("╔═════════ ACTIVE BUFFS ═════════╗")
-                for buff in range(len(list(battle_character["Buffs"].keys()))):
-                    encounter_text(f"{buff + 1}. {list(battle_character['Buffs'].keys())[buff]} - {battle_character['Buffs'][buff]['Remaining']} turns remaining")
-                    temp_list.append(list(battle_character['Buffs'].keys())[buff])
-                encounter_text(f"B. Back [b]")
-                if len(battle_character["Buffs"]) == 0:
+                for buff in range(len(list(character["Buffs"].keys()))):
+                    encounter_text(f"{buff + 1}. {list(character['Buffs'].keys())[buff]} - {character['Buffs'][list(character['Buffs'].keys())[buff]]['Duration']} turns remaining")
+                    temp_list.append(list(character['Buffs'].keys())[buff])
+                if len(character["Buffs"]) == 0:
                     x = random.choice([f"You have no buffs active.",
                                     f"No buffs have been applied",
                                     f"There are no buffs applied.",
@@ -590,8 +584,8 @@ def player_turn(battle_character):
                     encounter_text(x)
                     input_to_continue()
                     clear()
-                    continue
-                buff_decision = question_input("Retrive Info (#): ").strip().lower()
+                    break
+                buff_decision = question_input("Retrive Info (#), Back (b): ").strip().lower()
                 if buff_decision == "b" or buff_decision == "back":
                     break
                 try:
@@ -610,7 +604,7 @@ def player_turn(battle_character):
                         buff_choice = temp_list[buff_decision - 1]
                         clear()
                         encounter_text(f"╔══════ {buff_choice}'s Effects ══════╗")
-                        for stat, value in battle_character["Buffs"][buff_choice].items():
+                        for stat, value in character["Buffs"][buff_choice].items():
                             encounter_text(f" - {stat}: {value}")
                         input_to_continue()
                         clear()
@@ -624,7 +618,6 @@ def player_turn(battle_character):
                         input_to_continue()
                         clear()
                         continue
-
         
 
         elif sefirot_decision not in sefirot_links:
@@ -940,7 +933,7 @@ def player_turn(battle_character):
 
 
 
-    move_choice = move_choice.split('(')[0].strip()
+    move_choice = move_choice.split(':')[1].split('(')[0].strip()
 
     while True:
         if move_type == None:
@@ -1066,7 +1059,7 @@ def player_turn(battle_character):
             input_to_continue()
             break
 
-
+    clear()
     if battle_character["Health"] <= 0:
         x = random.choice([f"You have died in battle.",
                           f"You have fallen in combat.",
@@ -1086,13 +1079,14 @@ def player_turn(battle_character):
                           f"{enemies_battle['Name']} has been bested!"])
             encounter_text(x)
             input_to_continue()
+            clear()
 
 
     if len(battle_enemy_stat_list) == 0:
         return "victory", battle_character
     else:
         return None, battle_character
-...
+
 
 
 def enemy_turn(battle_character):
@@ -1188,6 +1182,7 @@ def battle(encountered_enemies):
     global enemies
     global character
     global battle_enemy_stat_list
+    clear()
     for enemy in encountered_enemies:
         encounter(enemy)
     battle_character = b_character_create()
@@ -1226,6 +1221,7 @@ def battle(encountered_enemies):
         battle_character = tick_buffs(battle_character)
 
     # Victory Sequence
+    clear()
     x = random.choice([f"You have emerged victorious from the battle!",
                       f"You stand victorious!",
                       f"You have conquered your foes in battle!",
@@ -1247,7 +1243,8 @@ def battle(encountered_enemies):
     
     encounter_text("You have been restored back to full health and mana!")
     input_to_continue()
-
+    clear()
+    
     for enemy in encountered_enemies:
         get_loot(enemy)
     

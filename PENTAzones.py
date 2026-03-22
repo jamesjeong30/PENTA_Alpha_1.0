@@ -1,6 +1,6 @@
 import random, time
 from PENTAutilities import question_input, type_text, input_to_continue, clear, monologue, quick_text, rarity_sort
-from PENTAutilities import character, main_stats
+from PENTAutilities import character
 from PENTAitems import menu
 
 
@@ -116,7 +116,7 @@ def sfz1_tile():
     global character
     while True:
         clear()
-        quick_text(f"You are currently at coordinates {character['Coordinates']}.")
+        quick_text(f"╔═════════ Coordinates {character['Coordinates']} ═════════╗")
         decision = question_input("Move North (n), South (s), East (e), West (w), Use an Item (u), Stay (stay): ").strip().lower()
         clear()
         if decision == "stay":
@@ -130,10 +130,6 @@ def sfz1_tile():
                 character["Luck"] = 5555555555
                 character["Stat Inheritance"] = 5555555555
                 character["Wisdom"] = 5555555555
-                main_stats["Strength"] = 5555555555
-                main_stats["Mana"] = 5555555555
-                main_stats["Health"] = 5555555555
-                main_stats["Defense"] = 5555555555
                 x = ["James: Alright...",
                      "James: You win.",
                      "James: How long did that really take.",

@@ -1,14 +1,17 @@
 import time
 import random
-import PENTAlore
-from PENTAutilities import character, main_stats
+import sys
+import os
+import json
+from PENTAutilities import character
 from PENTAutilities import type_text, encounter_text, quick_text, question_input, input_to_continue, clear
 from PENTAutilities import rarity_sort
+from PENTAlore import lore
 
 
 # Lore
-books = {"'Houlester's Guide to the 10 Sefirots' {DAMAGED}": "Description: A damaged book that explains pretty much everything to do about the Sefirots.",
-         "'Jess' Journal' {DAMAGED}": "Description: A damaged journal that contains the thoughts and experiences of a person named Jess."}
+books = {"'Houlester's Guide to the 10 Sefirots' {DAMAGED}": {"Description": "A damaged book that explains pretty much everything to do about the Sefirots."},
+         "'Jess' Journal' {DAMAGED}": {"Description": "A damaged journal that contains the thoughts and experiences of a person named Jess."}}
 
 # Loot
 chest_count = []
@@ -42,7 +45,14 @@ weapons = {"'Shiny Sword' {Rare}": {"Description": "A useless sword that offers 
            "'Iron Hammer' {Uncommon}": {"Strength": +20, "Health": +20, "Mana": -15, "Description": "A forged hammer made of iron.",
                                         "Craft": ["'Stick' {Common}", "'Iron' {Uncommon}", "'Scrap' {Common}"]},
            "'Iron Shield' {Uncommon}": {"Strength": +5, "Health": +10, "Mana": -15, "Defense": +25, "Description": "A mighty shield forged out of iron.",
-                                        "Craft": ["'Iron' {Uncommon}", "'Scrap' {Common}"]}
+                                        "Craft": ["'Iron' {Uncommon}", "'Scrap' {Common}"]},
+           "'Gun' {Legendary}": {"Strength": +2005, "Description": "A frickin gun.",
+                                 "Craft": ["Uncraftable"]},
+           "'Drainer Scythe' {Legendary}": {"Strength": +500, "Health": -200, "Mana": +1000, "Description": "A scythe made of a worthy adventurer's bones. Imbued with a lifesteal effect.",
+                                            "Craft": ["Uncraftable"]},
+           "'Eel-Shark Ball": {},
+           "'Light Blade' {}": {},
+           "'Tennis Racket' {Common}": {}
                                         
 }
 
@@ -62,10 +72,13 @@ items = {"'Health Potion' {Common}": {"Heal": 100, "Description": "A potion that
                                       "Craft": ["Uncraftable"]},
          "'Mana Potion' {Common}": {"Restore": 100, "Description": "A potion that restores 100 mana.",
                                     "Craft": ["Uncraftable"]},
-        "'Forest Key {Epic}": {"Description": "A key that unveils the secrets of the Starting Forest.",
-                                "Craft": ["'Stick' {Common}", "'Moss' {Common}",  "'Scrap' {Common}"]}
+        "'Forest Key' {Epic}": {"Description": "A key that unveils the secrets of the Starting Forest.",
+                                "Craft": ["'Stick' {Common}", "'Moss' {Common}",  "'Scrap' {Common}"]},
+        "'Rejamesinator' {Rare}": {"Heal": 2500, "Description": "A bean with powerful healing powers.",
+                                   "Craft": ["Uncraftable"]}
                                 
                                     }
+
 
 all_items = weapons | armor | items
 
@@ -284,8 +297,9 @@ def craft():
 
 
 def allocate(attribute):
+    global character
     while True:
-        quick_text(f"You have {main_stats[attribute]} units in {attribute}.")
+        quick_text(f"You have {character[attribute]} units in {attribute}.")
         quick_text(f"You have {character["POTENTIAL"]} POTENTIAL.")
         quick_text("Invest POTENTIAL (#), Back (b)")
         decision_s = question_input(">>> ")
@@ -304,15 +318,16 @@ def allocate(attribute):
                 continue
             else:
                 character["POTENTIAL"] -= decision_s
-                stats["POTENTIAL"] -= decision_s
-                main_stats[attribute] += decision_s
-                stats[attribute] += decision_s
                 character[attribute] += decision_s
+                quick_text(f"You have allocated {decision_s} PAUs into your {attribute} attribute.")
+                input_to_continue()
+                clear()
                 break
 
 def create(attribute):
+     global character
      while True:
-        quick_text(f"You have {main_stats[attribute]} units in {attribute}.")
+        quick_text(f"You have {character[attribute]} units in {attribute}.")
         quick_text(f"You have {character["POTENTIAL"]} POTENTIAL.")
         quick_text("Create POTENTIAL (#), Back (b)")
         decision_s = question_input(">>> ")
@@ -325,25 +340,26 @@ def create(attribute):
             input_to_continue()
             continue
         else:
-            if main_stats[attribute] < decision_s:
+            if character[attribute] < decision_s:
                 quick_text("You don't have that many stat units!")
                 input_to_continue()
                 continue
-            elif main_stats[attribute] == decision_s:
+            elif character[attribute] == decision_s:
                 quick_text("That is not possible.")
                 input_to_continue()
                 continue
             else:
                 character["POTENTIAL"] += decision_s
-                stats["POTENTIAL"] += decision_s
-                main_stats[attribute] -= decision_s
-                stats[attribute] -= decision_s
                 character[attribute] -= decision_s
+                quick_text(f"You have withthrew {decision_s} PAUs from your {attribute} attribute.")
+                input_to_continue()
+                clear()
                 break
 
 
 def potential():
-    global character, stats, main_stats
+    global character
+    stat_list = ["Strength", "Defense", "Health", "Mana"]
     while True:
         clear()
         decision = question_input("Allocate POTENTIAL (a), Create POTENTIAL (c), Back (b): ").strip().lower()
@@ -352,8 +368,8 @@ def potential():
         elif decision == "a":
             clear()
             quick_text("Possible stats to use POTENTIAL on:")
-            for attribute in main_stats:
-                quick_text(f"{attribute}: {main_stats[attribute]}")
+            for attribute in stat_list:
+                quick_text(f"{attribute}: {character[attribute]}")
             quick_text("Strength (s), Defense (d), Health (h), Mana (m): ")
             decision_1 = question_input(">>> ").strip().lower()
             clear()
@@ -370,8 +386,8 @@ def potential():
         elif decision == "c":
             clear()
             quick_text("Possible stats to draw POTENTIAL from:")
-            for attribute in main_stats:
-                quick_text(f"{attribute}: {main_stats[attribute]}")
+            for attribute in stat_list:
+                quick_text(f"{attribute}: {character[attribute]}")
             quick_text("Strength (s), Defense (d), Health (h), Mana (m): ")
             decision_1 = question_input(">>> ").strip().lower()
             clear()
@@ -393,6 +409,8 @@ def potential():
 
 def use(item):
     type_text("Nothing happened.")
+    input_to_continue()
+    clear()
     
 
 #the main menu of the game
@@ -401,10 +419,10 @@ def menu():
     while True:
         clear()
         if switch:
-            quick_text("╔═════════ PLAYER MENU ═════════╗")
+            quick_text("╔══════════════════ PLAYER MENU ══════════════════╗")
             x = question_input("Stats (s), Inventory (i), Craft (c), PAU (p), Location(l), Back (b), Quit (q): ").strip().lower()
         if not switch:
-            print("╔═════════ PLAYER MENU ═════════╗")
+            print("╔══════════════════ PLAYER MENU ══════════════════╗")
             x = input("Stats (s), Inventory (i), Craft (c), PAU (p), Location(l), Back (b), Quit (q): ").strip().lower()
         if x == 's':
             menu_stats()
@@ -426,14 +444,19 @@ def menu():
             clear()
             switch = False
             type_text(f"Current Location: {character['Location']}")
+            type_text(f"Current Coordinate: {character['Coordinate']}")
             input_to_continue()
             continue
         elif x == 'b':
             switch = False
+            clear()
             break
         elif x == "q":
+            clear()
             switch = False
-            quit()
+            save_game()
+            sys.exit()
+            
         else:
             print("Invalid option.")
             switch = False
@@ -457,13 +480,17 @@ def menu_stats():
 # FINISH THIS
 def inventory():
     global character
-    global main_stats
+    craft_description_list = ["Craft", "Description"]
     while True:
         clear()
         list_of_items = []
         rarity_order = ["{BROKEN}", "{DAMAGED}", "{UNFINISHED}", "{Common}", "{Uncommon}", "{Rare}", "{Epic}", "{Legendary}", "{Mythic}", "{Divine}", "{Special}"]
         x = 1
         quick_text("╔═════════ PLAYER INVENTORY ═════════╗")
+        if len(character['Inventory']) == 0:
+            type_text("You have no items in your inventory.")
+            print("")
+
         for rarity in rarity_order:
             for item_in_inventory in character["Inventory"]:
                     if item_in_inventory.split(" ")[-1] == rarity:
@@ -478,53 +505,58 @@ def inventory():
         except ValueError:
             if x == "e":
                     clear()
+                    quick_text("╔═════════ Held Weapon/Armor ═════════╗")
                     quick_text(f"Held Weapon: {character['Held_Weapon']}")
                     quick_text(f"Held Armor: {character['Held_Armor']}")
+                    print("")
                     if character["Held_Weapon"] == None and character["Held_Armor"] == None:
-                        quick_text("You have no equipment currently equipped.")
                         input_to_continue()
                         continue
                     elif character["Held_Weapon"] == None and character["Held_Armor"] != None:
-                        x = question_input("Take off armor (b), Back (anything else)").strip().lower()
+                        x = question_input("Take off armor (b), Back (anything else): ").strip().lower()
                         if x == "b":
-                            for armor_stat in armor[character["Held_Armor"]].items():
-                                if armor_stat != "Craft" or armor_stat != "Description":
-                                    character[armor_stat] -= weapons[character["Held_Armor"]][armor_stat]
-                                    main_stats[armor_stat] -= weapons[character["Held_Armor"]][armor_stat]
+                            clear()
+                            for armor_stat in armor[character["Held_Armor"]].keys():
+                                if armor_stat not in craft_description_list:
+                                    character[armor_stat] -= armor[character["Held_Armor"]][armor_stat]
                             character["Inventory"].append(character['Held_Armor'])
+                            quick_text(f"You have taken off the {character["Held_Armor"]}.")
                             character['Held_Armor'] = None
                         else:
                             continue
                         input_to_continue()
                         continue
                     elif character["Held_Weapon"] != None and character["Held_Armor"] == None:
-                        x = question_input("Take off weapon (a), Back (anything else)").strip().lower()
+                        x = question_input("Take off weapon (a), Back (anything else): ").strip().lower()
                         if x == "a":
-                            for weapon_stat in weapons[character["Held_Weapon"]].items():
-                                if weapon_stat != "Craft" or weapon_stat != "Description":
+                            clear()
+                            for weapon_stat in weapons[character["Held_Weapon"]].keys():
+                                if weapon_stat not in craft_description_list:
                                     character[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
-                                    main_stats[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
                             character["Inventory"].append(character["Held_Weapon"])
+                            quick_text(f"You have taken off the {character["Held_Weapon"]}.")
                             character['Held_Weapon'] = None
                         else:
                             continue
                         input_to_continue()
                         continue
                     elif character["Held_Weapon"] != None and character["Held_Armor"] != None:
-                        x = question_input("Take off weapon (a), Take off armor (b), Back (anything else)").strip().lower()
+                        x = question_input("Take off weapon (a), Take off armor (b), Back (anything else): ").strip().lower()
                         if x == "a":
-                            for weapon_stat in weapons[character["Held_Weapon"]].items():
-                                if weapon_stat != "Craft" or weapon_stat != "Description":
+                            clear()
+                            for weapon_stat in weapons[character["Held_Weapon"]].keys():
+                                if weapon_stat not in craft_description_list:
                                     character[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
-                                    main_stats[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
                             character["Inventory"].append(character["Held_Weapon"])
+                            quick_text(f"You have taken off the {character["Held_Weapon"]}.")
                             character['Held_Weapon'] = None
                         elif x == "b":
-                            for armor_stat in armor[character["Held_Armor"]].items():
-                                if armor_stat != "Craft" or armor_stat != "Description":
-                                    character[armor_stat] -= weapons[character["Held_Armor"]][armor_stat]
-                                    main_stats[armor_stat] -= weapons[character["Held_Armor"]][armor_stat]
+                            clear()
+                            for armor_stat in armor[character["Held_Armor"]].keys():
+                                if armor_stat not in craft_description_list:
+                                    character[armor_stat] -= armor[character["Held_Armor"]][armor_stat]
                             character["Inventory"].append(character['Held_Armor'])
+                            quick_text(f"You have taken off the {character["Held_Armor"]}.")
                             character['Held_Armor'] = None
                         else:
                             continue
@@ -542,41 +574,53 @@ def inventory():
             if list_of_items[x] in weapons.keys():
                 quick_text(f"You have summoned the {list_of_items[x]} out of your inventory.")
                 time.sleep(0.5)
-                decision = question_input(f"Equip (e), Drop (d), Info (i), Description (des), Back (b): ").strip().lower()
+                decision = question_input(f"Equip (e), Drop (d), Info (i), Back (b): ").strip().lower()
                 if decision == 'e':
-                    for weapon_stat in weapons[character["Held_Weapon"]].items():
-                            if weapon_stat != "Craft" or weapon_stat != "Description":
+                    clear()
+                    if character["Held_Weapon"] == None:
+                        pass
+
+                    else:
+                        for weapon_stat in weapons[character["Held_Weapon"]].items():
+                            if weapon_stat not in craft_description_list:
                                 character[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
-                                main_stats[weapon_stat] -= weapons[character["Held_Weapon"]][weapon_stat]
+
                     for weapon_stat in weapons[list_of_items[x]]:
-                        if weapon_stat != "Craft" or weapon_stat != "Description":
+                        if weapon_stat not in craft_description_list:
                                 character[weapon_stat] += weapons[list_of_items[x]][weapon_stat]
-                                main_stats[weapon_stat] += weapons[list_of_items[x]][weapon_stat]
+                    
                     character["Inventory"].remove(list_of_items[x])
-                    character["Inventory"].append(character["Held_Weapon"])
+                    if character["Held_Weapon"] == None:
+                        pass
+                    else:
+                        character["Inventory"].append(character["Held_Weapon"])
+                    
                     character["Held_Weapon"] = list_of_items[x]
                     type_text(f"You have equipped a {list_of_items[x]}.")
                     input_to_continue()
                     continue
+
+
                 elif decision == 'd':
-                    type_text(f"You dropped {list_of_items[x]}.")
+                    clear()
+                    type_text(f"You dropped a {list_of_items[x]}.")
                     character["Inventory"].remove(list_of_items[x])
                     input_to_continue()
                     continue
                 elif decision == 'i':
-                    type_text(f"{list_of_items[x]} Info: ")
-                    for stat, val in weapons[list_of_items[x]].items():
-                        type_text(f" - {stat}: {val}")
-                    input_to_continue()
-                    continue
-                elif decision == "des":
+                    clear()
                     quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
-                    quick_text(f"{weapons[list_of_items[x]]["Description"]}")
+                    for stat, val in weapons[list_of_items[x]].items():
+                        if stat == "Craft":
+                            pass
+                        else:
+                            type_text(f" - {stat}: {val}")
                     input_to_continue()
                     continue
                 elif decision == 'b':
                     continue
                 else:
+                    clear()
                     type_text("Invalid option.")
                     input_to_continue()
                     continue
@@ -585,41 +629,53 @@ def inventory():
             elif list_of_items[x] in armor.keys():
                 quick_text(f"You have summoned a {list_of_items[x]} out of your inventory.")
                 time.sleep(0.5)
-                decision = question_input(f"{list_of_items[x]}: Equip (e), Drop (d), Info (i), Description (des), Back (b): ").strip().lower()
+                decision = question_input(f"{list_of_items[x]}: Equip (e), Drop (d), Info (i), Back (b): ").strip().lower()
                 if decision == 'e':
-                    for armor_stat in armor[character["Held_Armor"]].items():
-                            if armor_stat != "Craft" or armor_stat != "Description":
-                                character[armor_stat] += weapons[character["Held_Armor"]][armor_stat]
-                                main_stats[armor_stat] += weapons[character["Held_Armor"]][armor_stat]    
+                    clear()
+                    if character["Held_Armor"] == None:
+                        pass
+
+                    else:
+                        for armor_stat in armor[character["Held_Armor"]].items():
+                            if armor_stat not in craft_description_list:
+                                character[armor_stat] -= armor[character["Held_Armor"]][armor_stat]
+
+
                     for armor_stat in armor[list_of_items[x]]:
-                        if armor_stat != "Craft" or armor_stat != "Description":
-                                character[armor_stat] +=  armor[list_of_items[x]][armor_stat]
-                                main_stats[armor_stat] +=  armor[list_of_items[x]][armor_stat]   
-                    character["Inventory"].remove(x)
-                    character["Inventory"].append(character["Held_Armor"])
-                    character["Held_Armor"] = x
-                    type_text(f"You have equipped the {x}.")
+                        if armor_stat not in craft_description_list:
+                            character[armor_stat] += armor[list_of_items[x]][armor_stat] 
+                     
+                    character["Inventory"].remove(list_of_items[x])
+                    if character["Held_Armor"] == None:
+                        pass
+                    else:
+                        character["Inventory"].append(character["Held_Armor"])
+                    character["Held_Armor"] = list_of_items[x]
+                    type_text(f"You have equipped the {list_of_items[x]}.")
                     input_to_continue()
                     continue
+
                 elif decision == 'd':
-                    type_text(f"You dropped {x}.")
-                    character["Inventory"].remove(x)
+                    clear()
+                    type_text(f"You dropped a {list_of_items[x]}.")
+                    character["Inventory"].remove(list_of_items[x])
                     input_to_continue()
                     continue
                 elif decision == 'i':
-                    type_text(f"{x} Info: ")
-                    for stat, val in armor[x].items():
-                        type_text(f" - {stat}: {val}")
+                    clear()
+                    quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
+                    for stat, val in weapons[list_of_items[x]].items():
+                        if stat == "Craft":
+                            pass
+                        else:
+                            type_text(f" - {stat}: {val}")
                     input_to_continue()
                     continue
-                elif decision == "des":
-                    quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
-                    quick_text(f"{armor[list_of_items[x]]["Description"]}")
-                    input_to_continue()
                     continue
                 elif decision == 'b':
                     continue
                 else:
+                    clear()
                     type_text("Invalid option.")
                     input_to_continue()
                     continue
@@ -630,17 +686,20 @@ def inventory():
                 time.sleep(0.5)
                 decision = question_input(f"{x}: Use (u), Drop (d), Info (i) Back (b): ").strip().lower()
                 if decision == 'u':
+                    clear()
                     character["Inventory"].remove(x)
-                    type_text(f"You used the {x}.")
+                    type_text(f"You used a {x}.")
                     use(x)
                     input_to_continue()
                     continue
                 elif decision == 'd':
-                    type_text(f"You dropped {x}.")
+                    clear()
+                    type_text(f"You dropped a {x}.")
                     character["Inventory"].remove(x)
                     input_to_continue()
                     continue
                 elif decision == 'i':
+                    clear()
                     quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
                     quick_text(f"{items[list_of_items[x]]['Description']}")
                     input_to_continue()
@@ -648,20 +707,24 @@ def inventory():
                 elif decision == 'b':
                     continue
                 else:
+                    clear()
                     type_text("Invalid option.")
                     input_to_continue()
                     continue
             
             elif list_of_items[x] in drops.keys():
+                clear()
                 quick_text(f"You have summoned the {list_of_items[x]} out of your inventory.")
                 time.sleep(0.5)
                 decision = question_input(f"{list_of_items[x]}: Drop (d), Info (i) Back (b): ").strip().lower()
                 if decision == 'd':
-                    type_text(f"You dropped {list_of_items[x]}.")
+                    clear()
+                    type_text(f"You dropped a {list_of_items[x]}.")
                     character["Inventory"].remove(list_of_items[x])
                     input_to_continue()
                     continue
                 elif decision == 'i':
+                    clear()
                     quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
                     quick_text(f"{drops[list_of_items[x]]["Description"]}")
                     input_to_continue()
@@ -669,6 +732,7 @@ def inventory():
                 elif decision == 'b':
                     continue
                 else:
+                    clear()
                     type_text("Invalid option.")
                     input_to_continue()
                     continue
@@ -679,15 +743,17 @@ def inventory():
                 decision = question_input(f"{list_of_items[x]}: Read (r), Drop (d), Info (i) Back (b): ").strip().lower()
                 if decision == 'r':
                     clear()
-                    PENTAlore.journal_0()
+                    lore(list_of_items[x])
                     input_to_continue()
                     continue
                 elif decision == 'd':
-                    type_text(f"You dropped {list_of_items[x]}.")
+                    clear()
+                    type_text(f"You dropped a {list_of_items[x]}.")
                     character["Inventory"].remove(list_of_items[x])
                     input_to_continue()
                     continue
                 elif decision == 'i':
+                    clear()
                     type_text(f"{list_of_items[x]} Info: ")
                     quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
                     quick_text(f"{books[list_of_items[x]]["Description"]}")
@@ -702,4 +768,53 @@ def inventory():
 
 
 
+def save_game():
+    global character
+    clear()
+    with open("save_file.json", "w") as file:
+        json.dump(character, file, indent=4)
 
+    quick_text("╔════════════ SAVE COMPLETE ════════════╗")
+    quick_text("║ Progress has been recorded.           ║")
+    quick_text("╚═══════════════════════════════════════╝")
+    print("")
+    input_to_continue()
+    clear()
+
+
+def load_game():
+    global character
+    clear()
+    try:
+        with open("save_file.json", "r") as file:
+            character = json.load(file)
+
+        quick_text("Save loaded successfully.")
+        input_to_continue()
+        clear()
+
+    except FileNotFoundError:
+        quick_text("No save file found. Starting new game.")
+        input_to_continue()
+        clear()
+
+
+
+
+def delete_save():
+    clear()
+    if os.path.exists("save_file.json"):
+        os.remove("save_file.json")
+        quick_text("╔════════════ SAVE DELETED ════════════╗")
+        quick_text("║ Progress has been erased.            ║")
+        quick_text("╚══════════════════════════════════════╝")
+        input_to_continue()
+        clear()
+
+    else:
+        quick_text("╔══════════════ NO SAVE FOUND ═══════════════╗")
+        quick_text("║ There is no save file to delete.           ║")
+        quick_text("╚════════════════════════════════════════════╝")
+        input_to_continue()
+        clear()
+    

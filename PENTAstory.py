@@ -5,6 +5,7 @@ from PENTAitems import weapons, armor, items, books, menu
 from PENTAbattle import astral_convergence, battle, battle_stat_analyze
 from PENTAmusic import AudioManager
 from PENTAitems import weapons, armor, items, books, chest_count, book_count
+from PENTAitems import save_game, load_game, delete_save
 import time
 import random
 from PENTAzones import sfz1_coords, sfz2_coords, zones
@@ -13,6 +14,7 @@ from PENTAzones import sfz1_tile
 
 # the game storyline
 def main():
+    load_game()
     while True:
         # DO THIS FOR EVERY ZONE IN THE GAME
         if character["Location"] == "Starting Forest Zone 1":
@@ -101,12 +103,14 @@ def starting_forest_zone_1():
             "Do you want to walk into the clearing?"]
     monologue(text)
     decision = question_input("Walk into clearing? Yes (y), No (n): ").strip().lower()
+    clear()
     if decision == 'yes' or decision == 'y':
         text = ["You walk into the clearing and find a shiny sword on the ground.",
                 "You pick up the sword, only for it to vanish in your hands."]
         monologue(text) 
         print("")
         quick_text("RARE FIND! 'Shiny Sword' {Rare}")
+        character["Inventory"].append("'Shiny Sword' {Rare}")
         print("")
         text =  ["You hear a faint sound..."
                 "You look around, searching for the source of the voice.",
@@ -125,8 +129,6 @@ def starting_forest_zone_1():
                 "Genesis: But first, lets get you familiar on how to summon the MENU.",
                 "Genesis: Try opening the MENU now."]
         quick_monologue(text)
-        monologue(text)
-        character["Inventory"].append("'Shiny Sword' {Rare}")
         time.sleep(0.5)
         while True:
             x = question_input("Type 'menu' or 'm' to open the MENU: ").strip().lower()
@@ -137,6 +139,8 @@ def starting_forest_zone_1():
                 break
             else:
                 type_text("Invalid input. Please try again.")
+                input_to_continue()
+                clear()
                 continue
         
         time.sleep(0.5)
@@ -379,6 +383,7 @@ def starting_forest_zone_1():
 
 # gameplay
 def sfz1():
+    global character
     while True:
         clear()
         coordinates, selected_item = sfz1_tile()
@@ -393,7 +398,7 @@ def sfz1():
 
 # All the coordinates
         if coordinates == [-967, 10]:
-            type_text("You find yourself at the remains of a recent battle")
+            type_text("You find yourself at the remains of a recent battle.")
             if selected_item == "'Forest Key' {Epic}":
                 sfz1_coords.append([-968, 10])
                 type_text("The forest reveals a hidden door to your west.")
@@ -437,6 +442,7 @@ def sfz1():
                         character["Inventory"] = rarity_sort(character["Inventory"])
                         character["Chest"]["Chest_1"] = True
                         input_to_continue()
+                        break
                     elif x == "m" or x == "menu":
                         menu()
                         continue
@@ -449,6 +455,7 @@ def sfz1():
                 continue
 
             elif selected_item == None:
+                type_text("You spot an opened chest.")
                 type_text("Your senses tell you that there are no monsters nearby.")
                 input_to_continue()
                 clear()
@@ -515,7 +522,7 @@ def sfz1():
             if not character["Shrines"]["armageddon_shrine"]:
                 while True:
                     text = ["You discover an shrine made of blackstone.",
-                            "The shrine seems untounched by both man and nature."
+                            "The shrine seems untounched by both man and nature.",
                             "What do you do?"]
                     quick_monologue(text)
                     x = question_input("Approach the shrine (a), Ignore it (anything else): ").strip().lower()
@@ -621,7 +628,7 @@ def sfz1():
                 input_to_continue()
                 continue
             while True:
-                type_text("There a wrecked wooden house nearby.")
+                type_text("There is a wrecked wooden house nearby.")
                 decision = question_input("Go inside the house (a), Ignore it (anything else): ").strip().lower()
                 if decision == "a":
                     clear()
@@ -647,7 +654,7 @@ def sfz1():
                         type_text("You walk back outside.")
                         input_to_continue()
                         break
-                elif x == "m" or x == "menu":
+                elif decision == "m" or decision == "menu":
                     menu()
                     continue
                 else:
@@ -670,10 +677,10 @@ def sfz1():
                 sfz1_coords.append([-965, 9])
                 input_to_continue()
                 continue
-            elif selected_item not in fourth_emperor_list:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
+            elif selected_item != None:
+                x = random.choice([f"The item {selected_item} did nothing.",
+                              f"The item {selected_item} had to effect on your surroundings or yourself.",
+                              f"The item {selected_item} produced no effect."])
                 type_text(x)
                 input_to_continue()
                 continue
@@ -701,13 +708,12 @@ def sfz1():
                 input_to_continue()
                 continue
             while True:
-                clear()
                 if not character["Corpse"]["Corpse_1"]:
                     text = ["You discover a human skeleton wearing armor.",
-                            "It doesn't seem to move."
+                            "It doesn't seem to move.",
                             "What do you do?"]
                     monologue(text)
-                    x = question_input("Loot the skeleton (a), Ignore it (anything else).").strip().lower()
+                    x = question_input("Loot the skeleton (a), Ignore it (anything else): ").strip().lower()
                     if x == "a":
                         clear()
                         quick_text("╔═══════ LOOT ═══════╗")
@@ -1062,4 +1068,6 @@ def sfz2():
         
 
 if __name__ == "__main__":
+    delete_save()
+    character["Coordinates"] = [-967, 10]
     main()

@@ -16,10 +16,10 @@ character = {
     "Sponsor": None,
     "Held_Weapon": None,
     "Held_Armor": None,
-    "Strength": 100,
+    "Strength": 1000,
     "Defense": 10,
-    "Health": 100,
-    "Mana": 100,
+    "Health": 10000,
+    "Mana": 5000,
     "Mana Regen": 10,
     "Wisdom": 0,
     "Luck": 0,
@@ -58,15 +58,6 @@ character = {
 
 
 
-# Use for PAU, but should just get rid of this and use character instead of main_stats
-main_stats = {"Strength": 100,
-    "Defense": 10,
-    "Health": 100,
-    "Mana": 100}
-
-
-
-
 buffs = {
     "Weapon Up": {"Strength": 100, "Cost": 10, "Duration": 2},
     "Stone Skin": {"Defense": 50, "Cost": 50, "Duration": 3},
@@ -92,33 +83,36 @@ def apply_buff(battle_character, buff_name):
         for stat, value in buff.items():
             if stat == "Strength" or stat == "Defense" or stat == "Health" or stat == "Mana":
                 battle_character[stat] += value
-                if character["Buffs"].get(buff_name) is None:
+                if character["Buffs"].get(buff_name) == None:
                     character["Buffs"].update({buff_name: {stat: value}})
                 else:
                     character["Buffs"][buff_name].update({stat: value})
 
         for stat, value in buff.items():
             if stat == "Defense_Multiplier" or stat == "Strength_Multiplier" or stat == "Health_Multiplier" or stat == "Mana_Multiplier":
+                stat = stat.split("_")[0].strip()
                 battle_character[stat] += (value - 1)*battle_character[stat]
-                if character["Buffs"].get(buff_name[stat]) is None:
+                if character["Buffs"].get(buff_name) == None:
                     character["Buffs"][buff_name].update({stat.split("_")[0].strip(): (value - 1)*battle_character[stat]})
                 else:
                     character["Buffs"][buff_name][stat.split("_")[0].strip()] += (value - 1)*battle_character[stat]
 
 
     elif buff.get("All_Multiply") == True:
+        temp_list_b = ["Duration", "Cost", "All_Multiply"]
         for stat, value in buff.items():
-            if stat != "Duration" or stat != "Cost" or stat != "All_Multiply":
+            if stat not in temp_list_b:
                 battle_character[stat] += (value - 1)*battle_character[stat]
-                if character["Buffs"].get(buff_name) is None:
+                if character["Buffs"].get(buff_name) == None:
                     character["Buffs"].update({buff_name: {stat: (value - 1)*battle_character[stat]}})
                 else:
                     character["Buffs"][buff_name].update({stat: (value - 1)*battle_character[stat]})
 
 
     else:
+        temp_list_c = ["Duration", "Cost"]
         for stat, value in buff.items():
-            if stat != "Duration" or stat != "Cost":
+            if stat not in temp_list_c:
                 battle_character[stat] += value
                 if character["Buffs"].get(buff_name) is None:
                     character["Buffs"].update({buff_name: {stat: value}})
@@ -183,7 +177,7 @@ enemies = {"Mossling": {"Name": "Mossling", "Affinity": "Malkhut", "Health": 150
            "Shadowkin": {"Name": "Shadowkin", "Affinity": "Malkhut", "Health": 250, "Strength": 60, "Mana": 100, "Defense": 0},
            "Forest Wisp": {"Name": "Forest Wisp", "Affinity": "Malkhut", "Health": 200, "Strength": 60, "Mana": 150, "Defense": 0},
            "Doofakle": {"Name": "Doofakle", "Affinity": "Yesod", "Health": 250, "Strength": 100, "Mana": 100, "Defense": 0},
-           "Rock Golem": {"Name": "Rock Golem", "Affinity": "Yesod", "Health": 400, "Strength": 30, "Mana": 0, "Defense": 20},
+           "Rock Golem": {"Name": "Rock Golem", "Affinity": "Yesod", "Health": 400, "Strength": 30, "Mana": 20, "Defense": 500},
            "Stigless": {"Name": "Stigless", "Affinity": "Yesod", "Health": 350, "Strength": 20, "Mana": 50, "Defense": 10},
            "Troph": {"Name": "Troph", "Affinity": "Netzach", "Health": 500, "Strength": 60, "Mana": 200, "Defense": 150},
            "Packer": {"Name": "Packer", "Affinity": "Netzach", "Health": 450, "Strength": 55, "Mana": 150, "Defense": 100},
@@ -194,7 +188,8 @@ enemies = {"Mossling": {"Name": "Mossling", "Affinity": "Malkhut", "Health": 150
            "One-eyed Birb": {"Name": "One-eyed Birb", "Affinity": "Netzach", "Health": 250, "Strength": 25, "Mana": 100, "Defense": 0},
            "Diddler": {},
            "Embark": {},
-           "Ionic": {}}
+           "Ionic": {},
+           "Kamacho": {}}
 
 enemy_moves = {"Mossling": {"Swipe": {"Damage": enemies["Mossling"]["Strength"], "Cost": 5}, "Vines": {"Damage": enemies["Mossling"]["Mana"], "Cost": 5}},
                "Pebblekin": {"Rock Throw": {"Damage": enemies["Pebblekin"]["Strength"], "Cost": 5}, "Stone Slam": {"Damage": enemies["Pebblekin"]["Strength"], "Cost": 10}},
@@ -270,7 +265,7 @@ def malkhut_decision(malkhut_move_list, battle_character):
             return None, None, None, battle_character
 
         try:
-            int(move_x)
+            move_x = int(move_x)
         except ValueError:
             encounter_text("Invalid move selection.")
             input_to_continue()
@@ -284,19 +279,19 @@ def malkhut_decision(malkhut_move_list, battle_character):
                 return None, None, None, battle_character
 
         
-        if move_x == "1":
+        if move_x == 1:
             move = malkhut_move_list_numbers[0]
-        elif move_x == "2":
+        elif move_x == 2:
             move = malkhut_move_list_numbers[1]
-        elif move_x == "3":
+        elif move_x == 3:
             move = malkhut_move_list_numbers[2]
-        elif move_x == "4":
+        elif move_x == 4:
             move = malkhut_move_list_numbers[3]
-        elif move_x == "5":
+        elif move_x == 5:
             move = malkhut_move_list_numbers[4]
-        elif move_x == "0":
+        elif move_x == 0:
             move = malkhut_move_list_numbers[5]
-        elif move_x == "11":
+        elif move_x == 11:
             move = malkhut_move_list_numbers[6]
 
 
@@ -489,14 +484,9 @@ def yesod_decision(yesod_move_list, battle_character):
             battle_menu(battle_character)
             clear()
             return None, None, None, battle_character
-        elif move_x not in yesod_move_list_numbers:
-            encounter_text("Invalid move selection.")
-            input_to_continue()
-            clear()
-            return None, None, None, battle_character
 
         try:
-            int(move_x)
+            move_x = int(move_x)
         except ValueError:
             encounter_text("Invalid move selection.")
             input_to_continue()
@@ -509,19 +499,19 @@ def yesod_decision(yesod_move_list, battle_character):
                 clear()
                 return None, None, None, battle_character
         
-        if move_x == "1":
+        if move_x == 1:
             move = yesod_move_list_numbers[0]
-        elif move_x == "2":
+        elif move_x == 2:
             move = yesod_move_list_numbers[1]
-        elif move_x == "3":
+        elif move_x == 3:
             move = yesod_move_list_numbers[2]
-        elif move_x == "4":
+        elif move_x == 4:
             move = yesod_move_list_numbers[3]
-        elif move_x == "5":
+        elif move_x == 5:
             move = yesod_move_list_numbers[4]
-        elif move_x == "0":
+        elif move_x == 0:
             move = yesod_move_list_numbers[5]
-        elif move_x == "11":
+        elif move_x == 11:
             move = yesod_move_list_numbers[6]
     
         if move == '0':
@@ -726,14 +716,9 @@ def hod_decision(hod_move_list, battle_character):
             battle_menu(battle_character)
             clear()
             return None, None, None, battle_character
-        elif move_x not in hod_move_list_numbers:
-            encounter_text("Invalid move selection.")
-            input_to_continue()
-            clear()
-            return None, None, None, battle_character
 
         try:
-            int(move_x)
+            move_x = int(move_x)
         except ValueError:
             encounter_text("Invalid move selection.")
             input_to_continue()
@@ -746,19 +731,19 @@ def hod_decision(hod_move_list, battle_character):
                 clear()
                 return None, None, None, battle_character
         
-        if move_x == "1":
+        if move_x == 1:
             move = hod_move_list_numbers[0]
-        elif move_x == "2":
+        elif move_x == 2:
             move = hod_move_list_numbers[1]
-        elif move_x == "3":
+        elif move_x == 3:
             move = hod_move_list_numbers[2]
-        elif move_x == "4":
+        elif move_x == 4:
             move = hod_move_list_numbers[3]
-        elif move_x == "5":
+        elif move_x == 5:
             move = hod_move_list_numbers[4]
-        elif move_x == "0":
+        elif move_x == 0:
             move = hod_move_list_numbers[5]
-        elif move_x == "11":
+        elif move_x == 11:
             move = hod_move_list_numbers[6]
     
         if move == '0':
@@ -934,14 +919,9 @@ def netzach_decision(netzach_move_list, battle_character):
             battle_menu(battle_character)
             clear()
             return None, None, None, battle_character
-        elif move_x not in netzach_move_list_numbers:
-            encounter_text("Invalid move selection.")
-            input_to_continue()
-            clear()
-            return None, None, None, battle_character
 
         try:
-            int(move_x)
+            move_x = int(move_x)
         except ValueError:
             encounter_text("Invalid move selection.")
             input_to_continue()
@@ -955,19 +935,19 @@ def netzach_decision(netzach_move_list, battle_character):
                 return None, None, None, battle_character
 
         
-        if move_x == "1":
+        if move_x == 1:
             move = netzach_move_list_numbers[0]
-        elif move_x == "2":
+        elif move_x == 2:
             move = netzach_move_list_numbers[1]
-        elif move_x == "3":
+        elif move_x == 3:
             move = netzach_move_list_numbers[2]
-        elif move_x == "4":
+        elif move_x == 4:
             move = netzach_move_list_numbers[3]
-        elif move_x == "5":
+        elif move_x == 5:
             move = netzach_move_list_numbers[4]
-        elif move_x == "0":
+        elif move_x == 0:
             move = netzach_move_list_numbers[5]
-        elif move_x == "11":
+        elif move_x == 11:
             move = netzach_move_list_numbers[6]
     
         if move == '0':
@@ -1113,7 +1093,16 @@ def netzach_decision(netzach_move_list, battle_character):
                 return move_choice, damage, "aoe", battle_character
 
 
-
+tiferet_moves = {"(Link 2) Tiferet: Perfect Form {B} (Buff, 1250 Mana) [1]": {"Usage": "Buff", "Formula": "Mana, Strength, Defense: +1250", "Cost": 1250, "Description": "A powerful buff that enhances most of the user's main attributes"},
+                 "(Link 2) Tiferet: Heal Tier 3 {C} (Heal, 500 Mana) [2]": {"Usage": "Heal", "Formula": 5000, "Cost": 500, "Description": "A greatly enhanced healing move."},
+                 "(Link 2) Tiferet: Mana Regen Tier 3 {C} (Restore, 0 Mana) [3]": {"Usage": "Restore", "Formula": 5000, "Cost": 0, "Description": "A greatly enhanced mana restoring move."},
+                 "(Link 2) Tiferet: Beacon {A-} (AOE, 999 Mana) [4]": {"Usage": "Damage", "Formula": "Mana * 5 + Strength * 4", "Cost": 999, "Description": "A move that shoots out a multicolored beacon from your hands."},
+                 "(Link 2) Tiferet: Miracle {A++} (Buff, 1 Mana) [5]": {"Usage": "Buff", "Formula": "Adds 10,000 Defense, Restores 3,000 Mana", "Cost": 0, "Description": "A miracle-calling move that strengthens your defense so that you may last just even one more attack."},
+                 "(Link 2) Tiferet: Integration {A+} (AOE, 2000 Mana) [6]": {"Usage": "Damage", "Formula": "5555 * number_of_enemies", "Cost": 2000, "Description": "A move that calls upon a constricting force."},
+                 "(Link 2) Tiferet: Coordination {A} (Single, 1540 Mana) [7]": {"Usage": "Damage", "Formula": "Sum of character's coordinates * 9.5", "Cost": 1540, "Description": "A single target strike that increases with power based on where you are relative to the center of the world."},
+                 "(Link 2) Tiferet: Unity Flow {B} (AOE, 450 Mana) [8]": {"Usage": "Damage", "Formula": "Mana * 4.5 + 2000 - Defense", "Cost": 450, "Description": "A flowing move that cuts through all targets in range."},
+                 "(Link 2) Tiferet: Form's Beauty {S} (AOE, 0 Mana) [9]": {"Usage": "Damage", "Formula": "10,000,000 / (Defense - Mana + Health - Strength)", "Cost": 0, "Description": "An extremely powerful move that scales based on how balanced your main attributes are."},
+                 "(Link 2) Tiferet: Beauty of Form {S} (Single, 0 Mana) [10]": {"Usage": "Damage", "Formula": "10,000,000 / (Mana - Defense + Strength - Health)", "Cost": 0, "Description": "An extremely powerful move that scales based on how balanced your main attributes are."}}
 
 
 
@@ -1134,7 +1123,7 @@ def type_text(text):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(0.08)
+        time.sleep(0.06)
     print()
 
 # for quick text display
@@ -1205,10 +1194,10 @@ def encounter_text(text):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
-        time.sleep(0.05)
+        time.sleep(0.035)
     print()
 
-def gibtext(text, speed=0.02, lock_delay=0.035):
+def gibtext(text, speed=0.02, lock_delay=0.02):
     chars = string.ascii_letters + string.digits + "!@#$%^&*()"
     current = [random.choice(chars) if c != " " else " " for c in text]
     locked = [False] * len(text)

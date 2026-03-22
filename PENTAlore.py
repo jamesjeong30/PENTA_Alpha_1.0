@@ -2,6 +2,12 @@ import time
 import random
 from PENTAutilities import clear, monologue, type_text, quick_text, quick_monologue, question_input, input_to_continue
 
+def lore(lore_item):
+    if lore_item == "'Houlester's Guide to the 10 Sefirots' {DAMAGED}":
+        book_0()
+    elif lore_item == "'Jess' Journal' {DAMAGED}":
+        journal_0()
+
 
 def book_0():
     while True:
