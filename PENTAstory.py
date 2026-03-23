@@ -1068,5 +1068,4 @@ def sfz2():
         
 
 if __name__ == "__main__":
-    delete_save()
     main()
