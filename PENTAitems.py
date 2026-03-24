@@ -22,6 +22,7 @@ weapons = {"'Shiny Sword' {Rare}": {"Description": "A useless sword that offers 
                                     "Craft": ["Uncraftable"]},
            "'Shiny Sword Alpha' {Epic}": {"Strength": +100, "Mana": +100, "Description": "A sword that offers more benefits than just its aesthetic appeal.",
                                     "Craft": ["Uncraftable"]},
+           "'Saebr' {Rare}": {},
            "'Stick' {Common}": {"Strength": +5, "Description": "A regular stick.",
                                 "Craft": ["Uncraftable"]},
            "'Magic Stick' {Rare}": {"Mana": +100, "Description": "A not-so-regular stick infused with mana.",

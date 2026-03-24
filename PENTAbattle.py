@@ -428,6 +428,7 @@ def astral_convergence(battle_character):
                             f"Declare the mana you aim to commit to Astral Convergence (Enter a number): "])
         
         mana_usage = question_input(x)
+        clear()
         
         try:
             mana_usage = int(mana_usage)
@@ -934,7 +935,7 @@ def player_turn(battle_character):
 
 
     move_choice = move_choice.split(':')[1].split('(')[0].strip()
-
+    clear()
     while True:
         if move_type == None:
             break

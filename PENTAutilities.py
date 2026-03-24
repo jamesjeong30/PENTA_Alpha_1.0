@@ -36,7 +36,7 @@ character = {
     "Inventory": [],
 
     # Progression
-    "Location": "Starting Forest Zone 1",
+    "Location": None,
     "Coordinates": None,
     "Been There": [[-967, 10]],
 
@@ -1240,6 +1240,7 @@ def encounter(enemy_name):
     type_text(x)
     encounter_text(f"You encounter a {enemy_name}! ")
     input_to_continue()
+    clear()
 
 
 def boss_encounter(boss_name):
@@ -1280,9 +1281,9 @@ def clear_last_line():
 
 
 def three_choices(texta, textb, textc):
-    quick_text(texta)
-    quick_text(textb)
-    quick_text(textc)
+    quick_text(f"A. {texta}")
+    quick_text(f"B. {textb}")
+    quick_text(f"C. {textc}")
     x = question_input(">>> ").strip().lower()
     clear_last_line()
     clear_last_line()

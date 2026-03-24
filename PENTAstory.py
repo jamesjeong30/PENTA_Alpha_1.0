@@ -112,7 +112,7 @@ def starting_forest_zone_1():
         quick_text("RARE FIND! 'Shiny Sword' {Rare}")
         character["Inventory"].append("'Shiny Sword' {Rare}")
         print("")
-        text =  ["You hear a faint sound..."
+        text =  ["You hear a faint sound...",
                 "You look around, searching for the source of the voice.",
                 "Suddenly, someone fades into vision before you.", 
                 "It is a female-like small floating humanoid creature...",
@@ -168,12 +168,13 @@ def starting_forest_zone_1():
     type_text("The clearing leads to a path deeper into the forest.")
     text = ["Genesis: This area is known as Zone 1 of the Starting Forest.",
             "Genesis: Each area is divided into zones, which are sections of a location.",
-            "Genesis: And each zone is divided further into individual encounters."
+            "Genesis: And each zone is divided further into individual sectors.",
             "Genesis: Zones often contain enemies, resources, and rare items for you to undertake.",
             "Genesis: Let us proceed cautiously."]
     quick_monologue(text)
     while True:
         x = question_input("Proceed into Zone 1? (p): ").strip().lower()
+        clear()
         if x == 'menu' or x == 'm':
             menu()
             continue
@@ -188,15 +189,14 @@ def starting_forest_zone_1():
 
     type_text("You enter the clearing.")
     encounter("Mossling")
+    clear()
     encounter_text("Genesis: All right, we have encountered our first enemy: the Mossling.")
     encounter_text("Genesis: Every time we encounter an enemy,")
     encounter_text("Genesis: we will enter a battle sequence where you will have to fight the enemy.")
     encounter_text("Genesis: In addition, I will provide you with a stat analysis of the enemy every turn.")
     encounter_text("Genesis: This will help you strategize and plan your moves accordingly.")
-    encounter_text("Genesis: For example...")
     dot_effect("Booting up enemy analysis module")
     time.sleep(0.5)
-    battle_stat_analyze()
     encounter_text("Genesis: You have the first move!")
     encounter_text("Genesis: Most living creatures can use a Sefirot, so ordinary physical attacks are meaningless.")
     encounter_text("Genesis: But that shouldn't be a problem for you.")
@@ -225,9 +225,11 @@ def starting_forest_zone_1():
     encounter_text(f"You take {enemy_moves['Mossling'][f'{x}']['Damage']} damage!") 
     encounter_text(f"Your Health: {Health} / 100")
     input_to_continue()
+    clear()
     type_text("You stumble back, clutching your side where the Mossling struck you.")
     quick_text("Genesis: Are you all right?")
     a = question_input("Are you okay? Yes (y), No (n): ")
+    clear()
     if a == 'y' or a == 'yes':
         encounter_text("You nod, trying to shake off the pain.")
     elif a == 'n' or a == 'no':
@@ -237,6 +239,7 @@ def starting_forest_zone_1():
 
     encounter_text("Genesis: We need to flee! You are in no condition to fight!")
     b = question_input("Flee from the Mossling? Yes (y), No (n): ")
+    clear()
     if b == 'y' or b == 'yes':
         encounter_text("You try to run, but the Mossling blocks your path!")
     elif b == 'n' or b == 'no':
@@ -264,7 +267,6 @@ def starting_forest_zone_1():
     time.sleep(1.5)
     character["Skill"]= "Astral Convergence {EX}"
     battle(["Mossling"])
-    input_to_continue()
     clear()
     type_text("Genesis: That power...")
     quick_text("What was that? (a)")
@@ -320,7 +322,7 @@ def starting_forest_zone_1():
             "Genesis: C (average)",
             "Genesis: B (above average)",
             "Genesis: A (rare)",
-            "Genesis: S (extremely rare)"
+            "Genesis: S (extremely rare)",
             "Genesis: Keep in mind that EVERY human has only ONE skill.",                
             "Genesis: Humans are blessed with a skill on their sixteenth birthday.",
             "Genesis: Skill ranks are usually measured through a device known as the 'Sefirot Channel'."
