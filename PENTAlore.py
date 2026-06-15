@@ -5,6 +5,10 @@ from PENTAutilities import clear, monologue, type_text, quick_text, quick_monolo
 def lore(lore_item):
     if lore_item == "'Houlester's Guide to the 10 Sefirots' {DAMAGED}":
         book_0()
+    elif lore_item == "'The Numbered Emperors' {DAMAGED}":
+        book_1()
+    elif lore_item == "'An Intensive Guide to Malkhut' {COMPLETE}":
+        book_2()
     elif lore_item == "'Jess' Journal' {DAMAGED}":
         journal_0()
 
@@ -111,6 +115,66 @@ def book_0():
             type_text("Invalid input.")
             input_to_continue()
             continue
+
+def book_1():
+    while True:
+        clear()
+        x = ["╔═══════ BOOK 'The Numbered Emperors' {DAMAGED} ═══════╗",
+             "Unreadable Parts",
+             "Chapter 4: The Fourth Emperor",
+             "Unreadable Parts",
+             "Chapter 7: Myths and Legends",
+             "Back (b)"]
+        quick_monologue(x)
+        print("")
+        x = question_input("Which Chapter would you like to read? ").strip().lower()
+        if x == "4":
+            clear()
+            text = ["Chapter 4: The Fourth Emperor",
+                    "The Fourth Emperor is the most peaceful of the Emperors.",
+                    "He is the only Emperor who has never been involved in any wars,",
+                    "and is known for his love of nature and animals.",
+                    "He is also the only Emperor who has never been seen by the public.",
+                    "The Fourth Emperor is said to have a deep connection with the forest.",
+                    "Yet, he is also regarded as one of the more powerful Emperors."]
+            monologue(text)
+            print("")
+            type_text("The rest of the chapter is unreadable.")
+            input_to_continue()
+            continue
+        elif x == "7":
+            clear()
+            text = ["Chapter 7: Myths and Legends",
+                    "There are many myths and legends about the Emperors.",
+                    "One of the most popular myths is that the Emperors were once humans who ascended to godhood.",
+                    "Something that, while theoretically possible, is highly unlikely.",
+                    "There are also many legends about the powers of the Emperors,",
+                    "and how they can control nature and manipulate reality itself through the Sefirots on a higher scale than ordinary humans.",
+                    "Rivalling the Gods themselves in some cases.",
+                    "It was told in stories that the first Emperor was..."]
+            monologue(text)
+            print("")
+            type_text("The rest of the chapter is unreadable.")
+            input_to_continue()
+            continue
+        elif x == "b":
+            break
+        else:
+            type_text("Invalid input.")
+            input_to_continue()
+            continue
+
+def book_2():
+    while True:
+        clear()
+        x = ["╔═══════ BOOK 'An Intensive Guide to Malkhut' {COMPLETE} ═══════╗",
+             "Chapter 1: The Basics of Malkhut",
+             "Chapter 2: The Power of Malkhut",
+             "Chapter 3: Malkhut and the Other Sefirots",
+             "Chapter 4: Malkhut and the World",
+             "Chapter 5: Deories & Spekulations"]
+
+
 
 def journal_0():
     while True:

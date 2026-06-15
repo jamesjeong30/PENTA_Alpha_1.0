@@ -8,13 +8,13 @@ from PENTAitems import weapons, armor, items, books, chest_count, book_count
 from PENTAitems import save_game, load_game, delete_save
 import time
 import random
-from PENTAzones import sfz1_coords, sfz2_coords, zones
-from PENTAzones import sfz1_tile
+from PENTAzones import sfz1_coords, sfz2_coords, sfz3_coords
+from PENTAzones import sfz1_tile, sfz2_tile
 
 
 # the game storyline
 def main():
-    load_game()
+###    load_game()
     while True:
         # DO THIS FOR EVERY ZONE IN THE GAME
         if character["Location"] == "Starting Forest Zone 1":
@@ -36,6 +36,7 @@ def main():
 # the intro of the game
 def intro():
     global character
+    clear()
     player_name = question_input("Enter your name: ")
     character["Name"] = player_name.strip().title()
     clear()
@@ -44,6 +45,7 @@ def intro():
     type_text("Your character also dies permanently if you die even once.")
     type_text("So don't skill issue I guess.")
     type_text("Thanks for taking interest in this demo.")
+    type_text("Also, please don't spam inputs, they carry over to the next text and can cause some unintended interactions.")
     type_text("The game and story will start right after this note.")
     input_to_continue()
     clear()
@@ -98,72 +100,73 @@ def starting_forest_zone_1():
     input_to_continue()
     loading()
 
-    text = ["You are in the Starting Forest.",
-            "There is a small clearing ahead.",
-            "Do you want to walk into the clearing?"]
-    monologue(text)
-    decision = question_input("Walk into clearing? Yes (y), No (n): ").strip().lower()
-    clear()
-    if decision == 'yes' or decision == 'y':
-        text = ["You walk into the clearing and find a shiny sword on the ground.",
-                "You pick up the sword, only for it to vanish in your hands."]
-        monologue(text) 
-        print("")
-        quick_text("RARE FIND! 'Shiny Sword' {Rare}")
-        character["Inventory"].append("'Shiny Sword' {Rare}")
-        print("")
-        text =  ["You hear a faint sound...",
-                "You look around, searching for the source of the voice.",
-                "Suddenly, someone fades into vision before you.", 
-                "It is a female-like small floating humanoid creature...",
-                "Her white dress and navy blue beret complements her face.",
-                "She feels not of this world..."]
-        monologue(text) 
-        quick_text("???: Hello, I am Genesis, your artificial intelligence created to guide you in The Realm.")
-        type_text("You see particles appearing from thin air to form a transluscent screen.")
-        text = ["Genesis: This screen is known as the [MENU]",
-                "Genesis: You can access it anytime by typing 'menu' or 'm'.",
-                "Genesis: And I assure you, this the [MENU] will be important!",
-                "Genesis: I will provide you with helpful information and support throughout your journey.",
-                "Genesis: I will reside within the MENU, and will help you in whatever path you take.",
-                "Genesis: But first, lets get you familiar on how to summon the MENU.",
-                "Genesis: Try opening the MENU now."]
-        quick_monologue(text)
-        time.sleep(0.5)
-        while True:
-            x = question_input("Type 'menu' or 'm' to open the MENU: ").strip().lower()
-            if x == 'menu' or x == 'm':
+
+    while True:
+        text = ["You are in the Starting Forest.",
+                "There is a small clearing ahead.",
+                "Do you want to walk into the clearing?"]
+        monologue(text)
+        decision = question_input("Walk into clearing? Yes (y), No (anything else): ").strip().lower()
+        clear()
+        if decision == 'yes' or decision == 'y':
+            text = ["You walk into the clearing and find a shiny sword on the ground.",
+                    "You pick up the sword, only for it to vanish in your hands."]
+            monologue(text) 
+            print("")
+            quick_text("RARE FIND! 'Shiny Sword' {Rare}")
+            character["Inventory"].append("'Shiny Sword' {Rare}")
+            print("")
+            text =  ["You hear a faint sound...",
+                    "You look around, searching for the source of the voice.",
+                    "Suddenly, someone fades into vision before you.", 
+                    "It is a female-like small floating humanoid creature...",
+                    "Her white dress and navy blue beret complements her face.",
+                    "She feels not of this world..."]
+            monologue(text) 
+            quick_text("???: Hello, I am Genesis, your artificial intelligence created to guide you in The Realm.")
+            type_text("You see particles appearing from thin air to form a transluscent screen.")
+            text = ["Genesis: This screen is known as the [MENU]",
+                    "Genesis: You can access it anytime by typing 'menu' or 'm'.",
+                    "Genesis: And I assure you, this [MENU] will be important!",
+                    "Genesis: I will provide you with helpful information and support throughout your journey.",
+                    "Genesis: I will reside within the MENU, and will help you in whatever path you take.",
+                    "Genesis: But first, lets get you familiar on how to summon the MENU.",
+                    "Genesis: Try opening the MENU now."]
+            quick_monologue(text)
+            time.sleep(0.5)
+            break
+        else:
+            quick_text("You decide to stay put.")
+            quick_text("But nothing happens.")
+            input_to_continue()
+            clear()
+            continue
+
+    while True:
+        x = question_input("Type 'menu' or 'm' to open the MENU: ").strip().lower()
+        if x == 'menu' or x == 'm':
                 clear()
-                quick_text("╔═══════ PLAYER MENU ═══════╗")
+                quick_text("╔══════════════════ PLAYER MENU ══════════════════╗")
                 quick_text("Stats (s), Inventory (i), Craft (c), PAU (p), Location (l), Back (b), Quit (q): ")
                 break
-            else:
-                type_text("Invalid input. Please try again.")
+        else:
+                clear()
+                quick_text("Invalid input. Please try again.")
                 input_to_continue()
                 clear()
                 continue
         
-        time.sleep(0.5)
-        input_to_continue()
-        clear()
-        text = ["Genesis: Great! You have successfully opened the MENU.",
-                "Genesis: To access what the menu has to offer, simply input the corresponding letter.",
+    time.sleep(0.5)
+    input_to_continue()
+    clear()
+    text = ["Genesis: Great! You have successfully opened the MENU.",
+                "Genesis: To access what the menu has to offer, simply input the corresponding letter (m) or (menu).",
                 "Genesis: Now, might I recommend for us to get out of this forest and find a safer place to rest.", 
                 "Genesis: In The Realm, danger is pretty much everywhere in the wilderness, so be cautious.",
                 f"Genesis: Let us get moving... {character["Name"]}."]
-        quick_monologue(text)
-        input_to_continue()
-        loading()
-
-    elif decision == 'no' or decision == 'n':
-        text = ["You decide to stay put.",
-                "But nothing happens."]
-        monologue(text)
-        starting_forest_zone_1()
-    else:
-        type_text("Invalid option.")
-        input_to_continue
-        starting_forest_zone_1()
+    quick_monologue(text)
+    input_to_continue()
+    loading()
 
     type_text("The clearing leads to a path deeper into the forest.")
     text = ["Genesis: This area is known as Zone 1 of the Starting Forest.",
@@ -172,36 +175,42 @@ def starting_forest_zone_1():
             "Genesis: Zones often contain enemies, resources, and rare items for you to undertake.",
             "Genesis: Let us proceed cautiously."]
     quick_monologue(text)
+    input_to_continue()
     while True:
+        clear()
         x = question_input("Proceed into Zone 1? (p): ").strip().lower()
         clear()
         if x == 'menu' or x == 'm':
             menu()
             continue
         elif x == 'p':
-            type_text(f"You proceed deeper into {list(zones.keys())[0]}, {zones['Starting Forest'][0]}.")
+            type_text(f"You proceed deeper into Starting Forest Zone 1: Unnamed Path.")
             time.sleep(1.5)
             break
         else:
             type_text("Invalid option.")
+            input_to_continue()
             continue
     clear()
 
     type_text("You enter the clearing.")
     encounter("Mossling")
     clear()
-    encounter_text("Genesis: All right, we have encountered our first enemy: the Mossling.")
-    encounter_text("Genesis: Every time we encounter an enemy,")
-    encounter_text("Genesis: we will enter a battle sequence where you will have to fight the enemy.")
-    encounter_text("Genesis: In addition, I will provide you with a stat analysis of the enemy every turn.")
-    encounter_text("Genesis: This will help you strategize and plan your moves accordingly.")
+    text = ["Genesis: All right, we have encountered our first enemy: the Mossling.",
+            "Genesis: Every time we encounter an enemy,",
+            "Genesis: we will enter a battle sequence where you will have to fight the enemy.",
+            "Genesis: In addition, I will provide you with a stat analysis of the enemy every turn.",
+            "Genesis: This will help you strategize and plan your moves accordingly."]
+    quick_monologue(text)
     dot_effect("Booting up enemy analysis module")
     time.sleep(0.5)
-    encounter_text("Genesis: You have the first move!")
-    encounter_text("Genesis: Most living creatures can use a Sefirot, so ordinary physical attacks are meaningless.")
-    encounter_text("Genesis: But that shouldn't be a problem for you.")
-    encounter_text("Genesis: You can attack by channeling a Sefirot using your mana.")
-    encounter_text("Genesis: This Mossling seems like the perfect test. Shall we?")
+    clear()
+    text = ["Genesis: You have the first move!",
+            "Genesis: Most living creatures can use a Sefirot, so ordinary physical attacks are meaningless.",
+            "Genesis: But that shouldn't be a problem for you.",
+            "Genesis: You can attack by channeling a Sefirot using your mana.",
+            "Genesis: This Mossling seems like the perfect test. Shall we?"]
+    quick_monologue(text)
     i = question_input("Input any key to use your mana and channel a Sefirot: ")
     dot_effect("")
     text = ["You throw your hands out towards the Mossling...",
@@ -214,12 +223,12 @@ def starting_forest_zone_1():
             "Genesis: It should be enough to channel even the lowest of Sefirots...",
             "Genesis: Oh no! Watch out!"]
     quick_monologue(text)
-    time.sleep(0.5)
+    time.sleep(0.2)
     encounter_text("The Mossling, realizing the opportunity, channels its own mana and attacks you!")
-    time.sleep(0.5)
+    time.sleep(0.2)
     x = random.choice(list(enemy_moves["Mossling"].keys()))
     encounter_text(f"The Mossling uses {x}!")
-    time.sleep(0.5)
+    time.sleep(0.2)
     Health = character["Health"]
     Health -= enemy_moves["Mossling"][f"{x}"]["Damage"]
     encounter_text(f"You take {enemy_moves['Mossling'][f'{x}']['Damage']} damage!") 
@@ -247,7 +256,7 @@ def starting_forest_zone_1():
     else:
         encounter_text("Unable to respond properly, you decide to stay and fight.")
     
-    time.sleep(1.8)
+    time.sleep(0.5)
     encounter_text("The Mossling, realizing your hesitation, prepares to lunge at you again!")
     encounter_text("Genesis: Brace yourself!")
     text = ["You close your eyes and cover your body, preparing for the impact...",
@@ -256,22 +265,22 @@ def starting_forest_zone_1():
     monologue(text)
     text = ["Genesis: Incredible... Is this what they meant for you?",
             "Genesis: It seems like you have awakened a power within yourself.",
-            "Genesis: I believe this is what is called a 'Skill'..."]
+            "Genesis: A {Skill}..."]
     quick_monologue(text)
     text = ["You see the Mossling running towards you, ready to strike.",
             "You focus your newfound energy and prepare to counterattack.",
             "Something within you finds the words to describe this power..."]
     monologue(text)
     dot_effect("(in a faint whisper)")
-    gibtext("Astral Convergence")
-    time.sleep(1.5)
+    gibtext("Astral Convergence {EX}")
+    time.sleep(2)
     character["Skill"]= "Astral Convergence {EX}"
     battle(["Mossling"])
     clear()
     type_text("Genesis: That power...")
-    quick_text("What was that? (a)")
-    quick_text("Can you explain what just happened? (b)")
-    quick_text("Awesome, isn't it? (c)")
+    quick_text("A. What was that? (a)")
+    quick_text("B. Can you explain what just happened? (b)")
+    quick_text("C. Awesome, isn't it? (c)")
     x = question_input(">>> ").strip().lower()
     clear_last_line()
     clear_last_line()
@@ -291,8 +300,7 @@ def starting_forest_zone_1():
     text = ["Genesis: What you have just done was utilizing a skill.",
             "Genesis: That is something to take great joy in.",
             "Genesis: Skills are something that can only be possessed by humans",
-            "Genesis: And they signify that one has obtained the attention or favor of one of the Gods themselves.",
-            "Genesis: Either that or the human has great affinity in one or more of the Sefirots."]
+            "Genesis: And provide great power to those who wield them."]
     quick_monologue(text)
 
 
@@ -325,7 +333,7 @@ def starting_forest_zone_1():
             "Genesis: S (extremely rare)",
             "Genesis: Keep in mind that EVERY human has only ONE skill.",                
             "Genesis: Humans are blessed with a skill on their sixteenth birthday.",
-            "Genesis: Skill ranks are usually measured through a device known as the 'Sefirot Channel'."
+            "Genesis: Skill ranks are usually measured through a device known as the 'Sefirot Channel'.",
             "Genesis: Alternatively, ranks can be estimated through direct testing in combat and usage.",
             "Genesis: As well as comparing it to the rarity of the skill relative to the known pool of skills.",
             "Genesis: Since you don't possess a 'Sefirot Channel', let us just estimate the power of your skill through combat.",
@@ -335,13 +343,13 @@ def starting_forest_zone_1():
     x = three_choices("{EX} Rank (a)", "Around S to B Rank (b)", "Probably C, D, or F (c)")
     if x == "a":
         quick_text("You: {EX} Rank")
-        type_text("Genesis: What is a... {EX} rank? Nevermind then...")
+        quick_text("Genesis: What is a... {EX} rank? Nevermind then...")
     elif x == "b":
         quick_text("You: Around S to B Rank")
-        type_text("Genesis: I see...")
+        quick_text("Genesis: I see...")
     elif x == "c":
         quick_text("You: Probably C, D, or F")
-        type_text("Genesis: Don't be too pessimistic.")
+        quick_text("Genesis: Don't be too pessimistic.")
     else:
         quick_text("You shrug. Genesis seems a bit disappointed.")
     
@@ -358,18 +366,21 @@ def starting_forest_zone_1():
 
     x = three_choices("Intelligent species? (a)", "How big is the world? (b)", "Which coordinates are we trying to get to? (c)")
     if x == "a":
-        text = ["Genesis: Yes. Sorry if that tripped you up.",
+        text = ["You: Intelligent species?",
+                "Genesis: Yes. Sorry if that tripped you up.",
                 "Genesis: The Realm contains only two types of intelligent species.",
                 "Genesis: Humans and Gods."]
         quick_monologue(text)
     elif x == "b":
-        text = ["Genesis: I unfortunately don't know that.",
-                "Genesis: The Realm is so vast,"
-                "Genesis: and is full of territorial deities,"
+        text = ["You: How big is the world?",
+                "Genesis: I unfortunately don't know that.",
+                "Genesis: The Realm is so vast,",
+                "Genesis: and is full of territorial deities,",
                 "Genesis: that there is no complete map of it..."]
         quick_monologue(text)
     elif x == "c":
-        text = ["Genesis: Currently, we should be making our way out of the Starting Forest.",
+        text = ["You: Which coordinates are we trying to get to?",
+                "Genesis: Currently, we should be making our way out of the Starting Forest.",
                 "Genesis: So we should try and find the coordinates marking the end of Zone 1."]
         quick_monologue(text)
     else:
@@ -378,6 +389,7 @@ def starting_forest_zone_1():
 
     text = ["Genesis: Alright then, let us move onwards...",
             "Genesis: Through Starting Forest's Zone 1..."]
+    quick_monologue(text)
     input_to_continue()
     character["Coordinates"] = [-967, 10]
     loading()
@@ -398,7 +410,7 @@ def sfz1():
                            f"You step into coordinates {character['Coordinates']}."])
         quick_text(text)
 
-# All the coordinates
+    # All the coordinates
         if coordinates == [-967, 10]:
             type_text("You find yourself at the remains of a recent battle.")
             if selected_item == "'Forest Key' {Epic}":
@@ -430,7 +442,7 @@ def sfz1():
                     x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
                     if x == "a":
                         clear()
-                        quick_text("╔═══════ CHEST Open ═══════╗")
+                        quick_text("╔══════════════ CHEST ══════════════╗")
                         chest_loot = {"'Leather' {Common}": 100, "'Iron' {Uncommon}": 50, 
                                         "'Leather Armor' {Common}": 20, "'Scrap Armor' {Common}": 20, 
                                         "'Iron Dagger' {Uncommon}": 5, "'Stone Hammer' {Common}": 5, "'Stone Sword' {Common}": 5, "'Stone Shield' {Common}": 5,
@@ -488,6 +500,7 @@ def sfz1():
                         character["Inventory"].append("'Houlester's Guide to the 10 Sefirots' {DAMAGED}")
                         character["Lore"]["Lore_1"] = True
                         character["Inventory"] = rarity_sort(character["Inventory"])
+                        break
                     elif x == "m" or x == "menu":
                         menu()
                         continue
@@ -536,7 +549,8 @@ def sfz1():
                         quick_monologue(text)
                         x = three_choices("What are Emperors? (a)", "What are shrines used for? (b)", "I wanna break the shrine. (c)")
                         if x == "a":
-                            text = ["Genesis: Emperors are humans but with power that rivals the Gods.",
+                            text = ["You: What are Emperors?",
+                                    "Genesis: Emperors are humans but with power that rivals the Gods.",
                                     "Genesis: Eventually, all that power went to their head,"
                                     "Genesis: and they rallied up and tried to take the Promised Land from the Gods."
                                     "Genesis: However, they were drove to near-extinction due to the Promised War.",
@@ -544,12 +558,14 @@ def sfz1():
                                     "Genesis: With a new generation of Emperors being cultivated."]
                             quick_monologue(text)
                         elif x == "b":
-                            text = ["Genesis: Shrines are practically trophies made for Emperors.",
+                            text = ["You: What are shrines used for?",
+                                    "Genesis: Shrines are practically trophies made for Emperors.",
                                     "Genesis: Whenever a human reaches the level of an Emperor,", 
                                     "Genesis: they receive a shrine to commend their achievement of becoming an Emperor."]
                             quick_monologue(text)
                         elif x == "c":
-                            text = ["Genesis: I wouldn't recommend that.",
+                            text = ["You: I wanna break the shrine.",
+                                    "Genesis: I wouldn't recommend that.",
                                     "Genesis: Even if an Emperor is dead,", 
                                     "Genesis: the destruction of their shrine may have consequences..."]
                             quick_monologue(text)
@@ -743,6 +759,7 @@ def sfz1():
 
         elif coordinates == [-965, 12]:
             if not character["End_of_Zone"]["sfz1"]:
+                time.sleep(1)
                 battle(["Rock Golem"])
                 clear()
                 while True:
@@ -1036,15 +1053,13 @@ def sfz1():
                 continue
 
 
-
-
-# intro to sfz2
+# intro to sfz2, add the option to access menu during question_inputs
 def starting_forest_zone_2():
-
     global character
-    global current_location
     loading()
-    current_location = zones[0][1]
+    character["Been There"] = [[-965, 99]]
+    character["Coordinates"] = [-965, 99]
+    character["Location"] = "Starting Forest Zone 2"
     text = ["You proceed down the Unnamed Path.",
             "There seems to be nothing but thick forest,", 
             "blocking any attempts of straying off the path.",
@@ -1053,11 +1068,92 @@ def starting_forest_zone_2():
             "You can't help but notice the view of innumerous stars.",
             "Looking forward, you spot something in the far distance.",
             "It seems like you will have to walk for a while..."]
-    monologue[text]
-    loading()
+    monologue(text)
+    input_to_continue()
+    clear()
+    dot_effect("Walking")
+    clear()
+    stat_list = ["Strength", "Mana", "Defense", "Health"]
+    for stat in stat_list:
+        character[stat] += 10
+    text = ["After a few days and facing multiple enemies, you see something in the distance through the dark night.",
+            "While it started off as just a blob of grey in the distance...",
+            "Getting closer and closer to the blob, you see that it is a humongous stone wall.",
+            "The sheer height of the wall reaches beyond the skies and into the night-ridden stars.",
+            "It seems to be impossible to go above the wall.",
+            "The moonlight illuminates a pathway to a section of a wall..."]
+    monologue(text)
+    input_to_continue()
+    while True:
+        clear()
+        decision = question_input("Walk on the pathway? Yes (y), No (anything else): ").strip().lower()
+        clear()
+        if decision == 'yes' or decision == 'y':
+            break
+        else:
+            quick_text("You decide to stay put.")
+            quick_text("But nothing happens.")
+            input_to_continue()
+            continue
+    text = ["You decide to walk down the moonlit path.",
+            "As you walk down the path, you see that the wall is covered in engravings of various things.",
+            "You see engravings of various Emperors, Gods, and Heroes.",
+            "You approach a section of the wall that has a gap in it.",
+            "The gap seems to be just big enough for you to fit through it."]
+    monologue(text)
+    input_to_continue()
+    while True:
+        clear()
+        decision = question_input("Enter the gap? Yes (y), No (anything else): ").strip().lower()
+        clear()
+        if decision == 'yes' or decision == 'y':
+            break
+        else:
+            quick_text("You decide to stay put.")
+            quick_text("But nothing happens.")
+            input_to_continue()
+            continue
+    text = ["You enter the gap, and find yourself in a new area.",
+            "The area is still covered in the same stone material as the wall.",
+            "However, the area seems to have some sort of a layout...",
+            "Looking up, the moon seems to shine even brighter than before...",
+            "You look back at the gap in the wall..."]
+    monologue(text)
+    input_to_continue()
+    clear()
+    time.sleep(1)
+    quick_text("RUMBLE RUMBLE RUMBLE")
+    time.sleep(0.2)
+    clear()
+    type_text("The gap in the wall closes behind you.")
+    input_to_continue()
+    clear()
+    text = ["Genesis: Oh my, it seems like our entrance has triggered some sort of mechanism.",
+            "Genesis: I'm afraid that we are now trapped...",
+            "Genesis: In some sort of... stone labyrinth.",
+            "Genesis: I have no idea how to get out of here, but we should try to find a way out!"]
+    quick_monologue(text)
+    input_to_continue()
+    clear()
+
 
 def sfz2():
-    ...
+    global character
+    while True:
+        clear()
+        coordinates, selected_item = sfz2_tile()
+        character["Been There"].append(coordinates)
+        clear()
+        text = random.choice([f"You move to coordinates {character['Coordinates']}.",
+                           f"You head towards coordinates {character['Coordinates']}.",
+                           f"You find yourself at coordinates {character['Coordinates']}.",
+                           f"You arrive at coordinates {character['Coordinates']}.",
+                           f"You step into coordinates {character['Coordinates']}."])
+        quick_text(text)
+
+        # All the coordinates
+        if coordinates == [-971, 99]:
+            ...
 
 
 

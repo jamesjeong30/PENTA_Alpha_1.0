@@ -1,7 +1,7 @@
-from PENTAutilities import tick_buffs, apply_buff, remove_buff, battle_menu, b_character_create, input_to_continue, gibtext, clear_last_line, type_text, quick_text, question_input, loading, monologue, clear, encounter_text, death, encounter
-from PENTAutilities import malkhut_decision, yesod_decision, hod_decision, netzach_decision
+from PENTAutilities import tick_buffs, apply_buff, remove_buff, battle_menu, b_character_create, input_to_continue, gibtext, clear_last_line, type_text, quick_text, question_input, loading, monologue, clear, encounter_text, death, encounter, custom_text
+from PENTAutilities import malkhut_decision, yesod_decision, hod_decision, netzach_decision, tiferet_decision, chesed_decision, gevurah_decision, chokmah_decision, binah_decision, keter_decision, eloki_decision
 from PENTAutilities import character, enemies, bosses, buffs, debuffs
-from PENTAutilities import enemy_moves, malkhut_moves, yesod_moves, hod_moves, netzach_moves
+from PENTAutilities import enemy_moves, malkhut_moves, yesod_moves, hod_moves, netzach_moves, tiferet_moves, chesed_moves, gevurah_moves, chokmah_moves, binah_moves, keter_moves, eloki_moves
 from PENTAmusic import AudioManager
 from PENTAitems import get_loot, menu
 from PENTAitems import weapons, armor, items    
@@ -17,11 +17,13 @@ sefirot_links = []
 battle_enemy_stat_list = []
 
 def battle_stat_analyze():
+    clear()
+    encounter_text(f"Genesis: Analyzing stats...")
+    input_to_continue()
     for x in battle_enemy_stat_list:
-        name = x["Name"]
-        encounter_text(f"Genesis: Analyzing {name} stats...")
-        input_to_continue
         clear()
+        name = x["Name"]
+        encounter_text(f"╔══════════ {name} STATS ══════════╗")
         for stat, value in x.items():
             if stat == "Name" or stat == "Affinity":
                 encounter_text(f" - {stat}: {value}")
@@ -36,7 +38,8 @@ def Malkhut(mana_cost):
     return True
 
 def Yesod(mana_cost):
-    dividor = 2000
+    global character
+    dividor = 1000 / (character["Yesod"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 100.0001:
         return False
@@ -50,7 +53,8 @@ def Yesod(mana_cost):
             return False
         
 def Hod(mana_cost):
-    dividor = 2000
+    global character
+    dividor = 1000 / (character["Hod"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 100.0001:
         return False
@@ -64,7 +68,8 @@ def Hod(mana_cost):
             return False
         
 def Netzach(mana_cost):
-    dividor = 2000
+    global character
+    dividor = 1000 / (character["Netzach"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 100.0001:
         return False
@@ -78,7 +83,8 @@ def Netzach(mana_cost):
             return False
 
 def Tiferet(mana_cost):
-    dividor = 5000
+    global character
+    dividor = 2500 / (character["Tiferet"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 500:
         return False
@@ -92,7 +98,8 @@ def Tiferet(mana_cost):
             return False
 
 def Chesed(mana_cost):
-    dividor = 5000
+    global character
+    dividor = 2500 / (character["Chesed"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 500:
         return False
@@ -106,7 +113,8 @@ def Chesed(mana_cost):
             return False
 
 def Gevurah(mana_cost):
-    dividor = 5000
+    global character
+    dividor = 2500 / (character["Gevurah"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 500:
         return False
@@ -120,7 +128,8 @@ def Gevurah(mana_cost):
             return False
 
 def Chokmah(mana_cost):
-    dividor = 10000
+    global character
+    dividor = 5000 / (character["Chokmah"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 1000:
         return False
@@ -134,7 +143,8 @@ def Chokmah(mana_cost):
             return False
 
 def Binah(mana_cost):
-    dividor = 15000
+    global character
+    dividor = 5000 / (character["Binah"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 1000:
         return False
@@ -148,7 +158,8 @@ def Binah(mana_cost):
             return False
         
 def Keter(mana_cost):
-    dividor = 25000
+    global character
+    dividor = 10000 / (character["Keter"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 1500:
         return False
@@ -162,7 +173,8 @@ def Keter(mana_cost):
             return False
 
 def Eloki(mana_cost):
-    dividor = 1000000
+    global character
+    dividor = 1000000 / (character["Eloki"])
     chance = (mana_cost + 55.55 * character["Luck"]) / dividor
     if character["Strength"] < 3000:
         return False
@@ -205,7 +217,6 @@ def linkage(mana_cost, battle_character):
                           f"You feel the support of Foundation over you.",
                           f"The reliability of Foundation resonates within you."])
         encounter_text(x)
-        encounter_text("Astral Convergence has temporarily increased your health by 50%.")
         battle_character["Health"] = battle_character["Health"] * 1.5
         sefirot_links.append("Yesod (y)")
 
@@ -224,7 +235,6 @@ def linkage(mana_cost, battle_character):
                           f"The dazzle of Glory surges through your veins.",
                           f"You are bathed in the light of Glory."])
         encounter_text(x)
-        encounter_text("Astral Convergence has temporarily increased your remaning mana by 50%.")
         battle_character["Mana"] = battle_character["Mana"] * 1.5
         sefirot_links.append("Hod (h)")
 
@@ -244,7 +254,6 @@ def linkage(mana_cost, battle_character):
                             f"The victory of Eternity surges through your veins.",
                             f"You feel triumphant with the might of Eternity."])
         encounter_text(x)
-        encounter_text("Astral Convergence has temporarily increased your strength by 50%.")
         battle_character["Strength"] = battle_character["Strength"] * 1.5
         sefirot_links.append("Netzach (n)")
 
@@ -266,7 +275,6 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Beauty uplifts your soul.",
                                   f"You are embraced by the essence of Beauty."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your mana by 50%.")
                 battle_character["Mana"] = battle_character["Mana"] * 1.5
                 sefirot_links.append("Tiferet (t)")
 
@@ -288,7 +296,6 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Kindness uplifts your soul.",
                                   f"You are embraced by the essence of Kindness."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your health by 50%.")
                 battle_character["Health"] = battle_character["Health"] * 1.5
                 sefirot_links.append("Chesed (c)")
 
@@ -310,7 +317,6 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Severity uplifts your soul.",
                                   f"You are embraced by the essence of Severity."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your strength by 50%.")
                 battle_character["Strength"] = battle_character["Strength"] * 1.5
                 sefirot_links.append("Gevurah (g)")
     
@@ -332,7 +338,6 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Wisdom uplifts your soul.",
                                   f"You are embraced by the essence of Wisdom."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your mana by 100%")
                 battle_character["Mana"] = battle_character["Mana"] * 2
                 sefirot_links.append("Chokmah (ch)")
         
@@ -354,7 +359,6 @@ def linkage(mana_cost, battle_character):
                                   f"The magnificence of Understanding uplifts your soul.",
                                   f"You are embraced by the essence of Understanding."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your remaining mana by 100%")
                 battle_character["Health"] = battle_character["Mana"] * 2
                 sefirot_links.append("Binah (b)")
         
@@ -377,7 +381,6 @@ def linkage(mana_cost, battle_character):
                                   f"You are embraced by the essence of the Crown.",
                                   f"You feel like a true sovereign among mortals."])
                 encounter_text(x)
-                encounter_text("Astral Convergence has temporarily increased your strength and health by 100%")
                 battle_character["Strength"] = battle_character["Strength"] * 2
                 battle_character["Health"] = battle_character["Health"] * 2
                 sefirot_links.append("Keter (k)")
@@ -389,10 +392,13 @@ def linkage(mana_cost, battle_character):
                 encounter_text("The powers of Divinity flows through you.")
                 encounter_text("You have surpassed the limits of the Sefirots.")
                 encounter_text("Wield the ultimate power temporarily bestowed upon you.")
-                encounter_text("Astral Convergence temporarily increased your strength and mana incomparably.")
+                encounter_text("Astral Convergence has increased your strength and mana incomparably.")
                 battle_character["Strength"] = battle_character["Strength"] * 55555
                 battle_character["Mana"] = battle_character["Mana"] * 55555
                 sefirot_links.append("Eloki (elo)")
+
+    if len(sefirot_links) > 1:
+        encounter_text("Astal Convergence has increased your stats based on the Sefirots you have linked.")
     
     type_text("Astral Convergence complete.")
     return battle_character
@@ -416,11 +422,13 @@ def astral_convergence(battle_character):
         gibtext("with all ten Sefirot nodes dim and barely visible.")
     gibtext("'May the stars align, and let the Blessing of the Gods be with you.'")
     gibtext("Astral Convergence has been activated.")
-    encounter_text(f"You have {battle_character["Mana"]} mana available.")
     input_to_continue()
     clear()
     
     while True:
+        clear()
+        encounter_text(f"╔════════════════ ASTRAL CONVERGENCE ════════════════╗")
+        encounter_text(f"You have {battle_character["Mana"]} mana available.")
         x = random.choice([f"How much mana would you like to invest into Astral Convergence? (Enter a number): ",
                           f"State the amount of mana you wish to channel into Astral Convergence (Enter a number): ",
                             f"Specify the mana you intend to allocate to Astral Convergence (Enter a number): ",
@@ -478,7 +486,7 @@ def astral_convergence(battle_character):
                 encounter_text("Genesis: Astral Convergence is reactivating...")
                 continue
     
-    time.sleep(1.5)
+    time.sleep(0.2)
     x = random.choice([f"You feel a connection to the realm of infinite space...",
                       f"A surge of cosmic energy courses through you...",
                       f"You are enveloped in a radiant aura of celestial light...",
@@ -495,7 +503,8 @@ def astral_convergence(battle_character):
     time.sleep(0.5)
     gibtext("The Tree of Life fades away...")
     encounter_text(f"You have {battle_character["Mana"]} mana remaining.")
-    print("")
+    input_to_continue()
+    clear()
     return battle_character
 
 
@@ -543,11 +552,70 @@ def player_turn(battle_character):
         sefirot_links.append("net")
         sefirot_links.append("netzach")
 
+    if "Tiferet (t)" in sefirot_links:
+        tiferet_moves_keys = list(tiferet_moves.keys())
+        random.shuffle(tiferet_moves_keys)
+        tiferet_move_list = []
+        tiferet_move_list = tiferet_moves_keys[:5]
+        sefirot_links.append("t")
+        sefirot_links.append("tif")
+        sefirot_links.append("tiferet")
+
+    if "Chesed (c)" in sefirot_links:
+        chesed_moves_keys = list(chesed_moves.keys())
+        random.shuffle(chesed_moves_keys)
+        chesed_move_list = []
+        chesed_move_list = chesed_moves_keys[:5]
+        sefirot_links.append("c")
+        sefirot_links.append('che')
+        sefirot_links.append("chesed")
+
+    if "Gevurah (g)" in sefirot_links:
+        gevurah_moves_keys = list(gevurah_moves.keys())
+        random.shuffle(gevurah_moves_keys)
+        gevurah_move_list = []
+        gevurah_move_list = gevurah_moves_keys[:5]
+        sefirot_links.append("g")
+        sefirot_links.append("gev")
+        sefirot_links.append("gevurah")
+    
+    if "Chokmah (ch)" in sefirot_links:
+        chokmah_moves_keys = list(chokmah_moves.keys())
+        random.shuffle(chokmah_moves_keys)
+        chokmah_move_list = []
+        chokmah_move_list = chokmah_moves_keys[:5]
+        sefirot_links.append("ch")
+        sefirot_links.append("cho")
+        sefirot_links.append("chokmah")
+    
+    if "Binah (b)" in sefirot_links:
+        binah_moves_keys = list(binah_moves.keys())
+        random.shuffle(binah_moves_keys)
+        binah_move_list = []
+        binah_move_list = binah_moves_keys[:5]
+        sefirot_links.append("b")
+        sefirot_links.append("bin")
+        sefirot_links.append("binah")
+    
+    if "Keter (k)" in sefirot_links:
+        keter_moves_keys = list(keter_moves.keys())
+        keter_move_list = keter_moves_keys
+        sefirot_links.append("k")
+        sefirot_links.append("ket")
+        sefirot_links.append("keter")
+    
+    if "Eloki (elo)" in sefirot_links:
+        eloki_moves_keys = list(eloki_moves.keys())
+        eloki_move_list = eloki_moves_keys
+        sefirot_links.append("elo")
+        sefirot_links.append("eloki")
+        sefirot_links.append("e")
+
 
 
     while True:
         clear()
-        encounter_text("Sefirot Links Active:")
+        encounter_text(f"╔══════════ SEFIROT LINKS ACTIVE ══════════╗")
         print("")
         if "malkhut" in sefirot_links:
             encounter_text("Malkhut (m)")
@@ -557,6 +625,20 @@ def player_turn(battle_character):
             encounter_text("Hod (h)")
         if "netzach" in sefirot_links:
             encounter_text("Netzach (n)")
+        if "tiferet" in sefirot_links:
+            encounter_text("Tiferet (t)")
+        if "chesed" in sefirot_links:
+            encounter_text("Chesed (c)")
+        if "gevurah" in sefirot_links:
+            encounter_text("Gevurah (g)")
+        if "chokmah" in sefirot_links:
+            encounter_text("Chokmah (ch)")
+        if "binah" in sefirot_links:
+            encounter_text("Binah (b)")
+        if "keter" in sefirot_links:
+            encounter_text("Keter (k)")
+        if "eloki" in sefirot_links:
+            encounter_text("Eloki (elo)")
 
         print("")
         sefirot_decision = question_input("Choose your Sefirot: ").strip().lower()
@@ -573,10 +655,10 @@ def player_turn(battle_character):
                 clear()
                 temp_list = []
                 encounter_text("╔═════════ ACTIVE BUFFS ═════════╗")
-                for buff in range(len(list(character["Buffs"].keys()))):
-                    encounter_text(f"{buff + 1}. {list(character['Buffs'].keys())[buff]} - {character['Buffs'][list(character['Buffs'].keys())[buff]]['Duration']} turns remaining")
-                    temp_list.append(list(character['Buffs'].keys())[buff])
-                if len(character["Buffs"]) == 0:
+                for buff in range(len(list(battle_character["Buffs"].keys()))):
+                    encounter_text(f"{buff + 1}. {list(battle_character['Buffs'].keys())[buff]} - {battle_character['Buffs'][list(battle_character['Buffs'].keys())[buff]]['Duration']} turns remaining")
+                    temp_list.append(list(battle_character['Buffs'].keys())[buff])
+                if len(list(battle_character["Buffs"].keys())) == 0:
                     x = random.choice([f"You have no buffs active.",
                                     f"No buffs have been applied",
                                     f"There are no buffs applied.",
@@ -605,7 +687,7 @@ def player_turn(battle_character):
                         buff_choice = temp_list[buff_decision - 1]
                         clear()
                         encounter_text(f"╔══════ {buff_choice}'s Effects ══════╗")
-                        for stat, value in character["Buffs"][buff_choice].items():
+                        for stat, value in battle_character["Buffs"][buff_choice].items():
                             encounter_text(f" - {stat}: {value}")
                         input_to_continue()
                         clear()
@@ -638,12 +720,12 @@ def player_turn(battle_character):
             order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
             temp_list = []
             x = "1"
-            quick_text("╔═════════ Available Malkhut Moves ═════════╗")
+            quick_text("╔══════════════ Available Malkhut Moves ══════════════╗")
             for number_ig in order:
                 for move_malkhut in malkhut_move_list:
                     if move_malkhut.split("[")[1].split("]")[0] == number_ig:
                         temp_list.append(move_malkhut)
-                        quick_text(f"{x}. {move_malkhut.split('[')[0].strip()}")
+                        custom_text(f"{x}. {move_malkhut.split('[')[0].strip()}", 0.01)
                         x = str(int(x) + 1)
             quick_text(f"B. Back [b]")
             move_choice, damage, move_type, battle_character = malkhut_decision(temp_list, battle_character)
@@ -718,7 +800,7 @@ def player_turn(battle_character):
                 for move_yesod in yesod_move_list:
                     if move_yesod.split("[")[1].split("]")[0] == number_ig:
                         temp_list.append(move_yesod)
-                        quick_text(f"{x}. {move_yesod.split('[')[0].strip()}")
+                        custom_text(f"{x}. {move_yesod.split('[')[0].strip()}", 0.01)
                         x = str(int(x) + 1)
             quick_text(f"B. Back [b]")
             move_choice, damage, move_type, battle_character = yesod_decision(temp_list, battle_character)
@@ -793,7 +875,7 @@ def player_turn(battle_character):
                 for move_hod in hod_move_list:
                     if move_hod.split("[")[1].split("]")[0] == number_ig:
                         temp_list.append(move_hod)
-                        quick_text(f"{x}. {move_hod.split('[')[0].strip()}")
+                        custom_text(f"{x}. {move_hod.split('[')[0].strip()}", 0.01)
                         x = str(int(x) + 1)
             quick_text(f"B. Back [b]")
             move_choice, damage, move_type, battle_character = hod_decision(temp_list, battle_character)
@@ -868,7 +950,7 @@ def player_turn(battle_character):
                 for move_netzach in netzach_move_list:
                     if move_netzach.split("[")[1].split("]")[0] == number_ig:
                         temp_list.append(move_netzach)
-                        quick_text(f"{x}. {move_netzach.split('[')[0].strip()}")
+                        custom_text(f"{x}. {move_netzach.split('[')[0].strip()}", 0.01)
                         x = str(int(x) + 1)
             quick_text(f"B. Back [b]")
             move_choice, damage, move_type, battle_character = netzach_decision(temp_list, battle_character)
@@ -933,12 +1015,540 @@ def player_turn(battle_character):
             break
 
 
+        elif sefirot_decision == "t" or sefirot_decision == "tiferet" or sefirot_decision == "tif":
+            clear()
+            order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Tiferet Moves ══════════════╗")
+            for number_ig in order:
+                for move_tiferet in tiferet_move_list:
+                    if move_tiferet.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_tiferet)
+                        custom_text(f"{x}. {move_tiferet.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = tiferet_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+
+        elif sefirot_decision == "c" or sefirot_decision == "chesed" or sefirot_decision == "che":
+            clear()
+            order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Chesed Moves ══════════════╗")
+            for number_ig in order:
+                for move_chesed in chesed_move_list:
+                    if move_chesed.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_chesed)
+                        custom_text(f"{x}. {move_chesed.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = chesed_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+        
+        elif sefirot_decision == "g" or sefirot_decision == "gevurah" or sefirot_decision == "gev":
+            clear()
+            order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Gevurah Moves ══════════════╗")
+            for number_ig in order:
+                for move_gevurah in gevurah_move_list:
+                    if move_gevurah.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_gevurah)
+                        custom_text(f"{x}. {move_gevurah.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = gevurah_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+
+        elif sefirot_decision == "ch" or sefirot_decision == "chokmah" or sefirot_decision == "cho":
+            clear()
+            order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Chokmah Moves ══════════════╗")
+            for number_ig in order:
+                for move_chokmah in chokmah_move_list:
+                    if move_chokmah.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_chokmah)
+                        custom_text(f"{x}. {move_chokmah.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = chokmah_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+
+        elif sefirot_decision == "b" or sefirot_decision == "binah" or sefirot_decision == "bin":
+            clear()
+            order = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Binah Moves ══════════════╗")
+            for number_ig in order:
+                for move_binah in binah_move_list:
+                    if move_binah.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_binah)
+                        custom_text(f"{x}. {move_binah.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = binah_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+        
+        elif sefirot_decision == "k" or sefirot_decision == "keter" or sefirot_decision == "ket":
+            clear()
+            order = ["1", "2", "3", "4", "5"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Keter Moves ══════════════╗")
+            for number_ig in order:
+                for move_keter in keter_move_list:
+                    if move_keter.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_keter)
+                        custom_text(f"{x}. {move_keter.split('[')[0].strip()}", 0.01)
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = keter_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+        
+        elif sefirot_decision == "e" or sefirot_decision == "eloki" or sefirot_decision == "elo":
+            clear()
+            order = ["1", "2"]
+            temp_list = []
+            x = "1"
+            quick_text("╔══════════════ Available Eloki Moves ══════════════╗")
+            for number_ig in order:
+                for move_eloki in eloki_move_list:
+                    if move_eloki.split("[")[1].split("]")[0] == number_ig:
+                        temp_list.append(move_eloki)
+                        quick_text(f"{x}. {move_eloki.split('[')[0].strip()}")
+                        x = str(int(x) + 1)
+            quick_text(f"B. Back [b]")
+            move_choice, damage, move_type, battle_character = eloki_decision(temp_list, battle_character)
+            clear()
+            
+            if move_choice == "back" or move_choice == None:
+                continue
+            elif move_choice == "menu":
+                x = battle_menu(battle_character)
+                clear()
+                continue
+            elif move_choice == "e" or move_choice == "enemies" or move_choice == "enemy" or move_choice == "a" or move_choice == "analyze" or move_choice == "stat" or move_choice == "stat analyze" or move_choice == "stats":
+                battle_stat_analyze()
+                clear()
+                continue
+            elif move_choice == "buff" or move_choice == "buffs" or move_choice == "b":
+                clear()
+                encounter_text("Active Buffs")
+                for buff in range(len(character["Buffs"])):
+                    encounter_text(f"{buff + 1}. {character['Buffs'][buff]['Name']} - {character['Buffs'][buff]['Remaining']} turns remaining")
+                if len(character["Buffs"]) == 0:
+                    x = random.choice([f"You have no buffs active.",
+                                      f"No buffs have been applied",
+                                      f"There are no buffs applied.",
+                                      f"You have no buffs.",
+                                      f"No applied buffs."])
+                    encounter_text(x)
+                input_to_continue()
+                clear()
+                continue
+            elif move_type == "single":
+                while True:
+                    for enemy in range(len(battle_enemy_stat_list)):
+                        encounter_text(f"{enemy + 1}. {battle_enemy_stat_list[enemy]['Name']} - {battle_enemy_stat_list[enemy]['Health']} HP")
+                    target_decision = question_input("Which enemy would you like to target (#), Back (b): ").strip().lower()
+                    if target_decision == "b" or target_decision == "back":
+                        encounter_text("You have powered down your attack.")
+                        encounter_text("Returning to Sefirot selection...")
+                        break
+                    try:
+                        target_decision = int(target_decision)
+                    except ValueError:
+                        x = random.choice([f"That is not a valid enemy number.",
+                                        f"Please select a valid enemy number.",
+                                        f"That enemy does not exist.",
+                                        f"Enter a number corresponding to an enemy."])
+                        encounter_text(x)
+                    else: 
+                        if 1 <= target_decision <= len(battle_enemy_stat_list):
+                            attack_decision = target_decision - 1
+                            break
+                        else:
+                            x = random.choice([f"That is not a valid enemy number.",
+                                            f"Please select a valid enemy number.",
+                                            f"That enemy does not exist.",
+                                            f"Enter a number corresponding to an enemy."])
+                            encounter_text(x)
+                if target_decision == "b" or target_decision == "back":
+                    continue
+                else:
+                    break
+            break
+
+
+
 
     move_choice = move_choice.split(':')[1].split('(')[0].strip()
     clear()
     while True:
         if move_type == None:
             break
+        
+
         
         elif "single" in move_type:
             chance = random.randint(0, 100)
@@ -951,10 +1561,13 @@ def player_turn(battle_character):
                                   f"CRITICAL! Your strike is a mighty blow!"])
                 encounter_text(x)
                 time.sleep(0.2)
-            battle_enemy_stat_list[attack_decision]["Health"] -= round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.5)
-            dealt_damage = round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.5)
+            if round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.5) < 0:
+                dealt_damage = 0
+            else:
+                dealt_damage = round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.5)
+            battle_enemy_stat_list[attack_decision]["Health"] -= dealt_damage
             attack_decision = battle_enemy_stat_list[attack_decision]["Name"]
-            y = random.choice([f"You use {move_choice} on {attack_decision}!",
+            y = random.choice([f"You use '{move_choice}' on the {attack_decision}!",
                                   f"{attack_decision} is struck by {move_choice}!",
                                   f"You unleash {move_choice} upon {attack_decision}!",
                                   f"{attack_decision} is hit with {move_choice}!",
@@ -965,7 +1578,7 @@ def player_turn(battle_character):
                                   f"You direct {move_choice} at {attack_decision}!"])
             encounter_text(y)
             time.sleep(0.2)
-            x = random.choice([f"You deal {dealt_damage} damage to {attack_decision}!",
+            x = random.choice([f"You deal {dealt_damage} damage to the {attack_decision}!",
                                    f"{attack_decision} takes {dealt_damage} damage!",
                                    f"{attack_decision} is hit for {dealt_damage} damage!",
                                    f"You have inflicted {dealt_damage} to {attack_decision}!",
@@ -994,11 +1607,8 @@ def player_turn(battle_character):
                                   f"CRITICAL! Your strike is a mighty blow!"])
                 encounter_text(x)
                 time.sleep(0.2)
-            for enemy in battle_enemy_stat_list:
-                enemy["Health"] -= round(damage - enemy["Defense"]/1.5)
-            
 
-            x = random.choice([f"You use {move_choice} on all enemies!",
+            x = random.choice([f"You use '{move_choice}' on all enemies!",
                               f"All enemies are struck by {move_choice}!",
                               f"You unleash {move_choice} upon all enemies!",
                               f"All enemies are hit with {move_choice}!",
@@ -1009,10 +1619,15 @@ def player_turn(battle_character):
                               f"You direct {move_choice} at all enemies!"])
             encounter_text(x)
             time.sleep(0.2)
+
             for enemy in battle_enemy_stat_list:
                 attack_decision = enemy["Name"]
-                dealt_damage = round(damage - enemy["Defense"]/1.5)
-                y = random.choice([f"You deal {dealt_damage} damage to {attack_decision}!",
+                if round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.25) < 0:
+                    dealt_damage = 0
+                else:
+                    dealt_damage = round(damage - battle_enemy_stat_list[attack_decision]["Defense"]/1.25)
+                enemy["Health"] -= dealt_damage
+                y = random.choice([f"You deal {dealt_damage} damage to the {attack_decision}!",
                                    f"{attack_decision} takes {dealt_damage} damage!",
                                    f"{attack_decision} is hit for {dealt_damage} damage!",
                                    f"You have inflicted {dealt_damage} to {attack_decision}!",
@@ -1026,7 +1641,7 @@ def player_turn(battle_character):
                                    f"{dealt_damage} damage lands on {attack_decision}!",
                                    f"{attack_decision} is wounded for {dealt_damage} damage!"])
                 encounter_text(y)
-            input_to_continue()
+
             break
         
 
@@ -1091,7 +1706,8 @@ def player_turn(battle_character):
 
 
 def enemy_turn(battle_character):
-    encounter_text("Enemy Turn:")
+    global battle_enemy_stat_list
+    encounter_text("╔══════════ ENEMY TURN ══════════╗")
     for enemy in battle_enemy_stat_list:
         move_list = list(enemy_moves[enemy["Name"]].keys())
         enemy_decision = random.choice(move_list)
@@ -1113,8 +1729,8 @@ def enemy_turn(battle_character):
                             f"{enemy['Name']} directs {enemy_decision} at you!"])
             encounter_text(x)
             time.sleep(0.2)
-            parry_chance = random.randint(0, 100)
-            if character["Parry"] > parry_chance:
+            parry_chance = random.randint(1, 100)
+            if character["Parry"] >= parry_chance:
                 x = random.choice([f"PARRY! You deflect {enemy['Name']}'s attack!",
                                   f"PARRY! You deflect {enemy['Name']}'s strike!",
                                   f"PARRY! You deflect {enemy['Name']}'s assault!",
@@ -1123,8 +1739,8 @@ def enemy_turn(battle_character):
                 encounter_text(x)
                 time.sleep(0.2)
             else:
-                dodge_chance = random.randint(0, 100)
-                if character["Dodge"] > dodge_chance:
+                dodge_chance = random.randint(1, 100)
+                if character["Dodge"] >= dodge_chance:
                     x = random.choice([f"DODGE! You evade {enemy['Name']}'s attack!",
                                     f"DODGE! You sidestep {enemy['Name']}'s strike!",
                                     f"DODGE! You duck under {enemy['Name']}'s assault!",
@@ -1134,8 +1750,17 @@ def enemy_turn(battle_character):
                     time.sleep(0.2)
             
             if character["Parry"] <= parry_chance and character["Dodge"] <= dodge_chance:
-                battle_character["Health"] -= round(damage - battle_character["Defense"]/1.5)
-                y = random.choice([f"{enemy['Name']} deals {round(damage - battle_character['Defense']/1.5)} damage to you!",
+                if round(damage - battle_character["Defense"]/1.5) < 0:
+                    battle_character["Health"] -= 0
+                    y = random.choice([f"{enemy['Name']} attacks you but fails to penetrate your defenses!",
+                            f"{enemy['Name']} strikes you but your armor absorbs the damage!",
+                            f"{enemy['Name']} assaults you but your defense holds strong!",
+                            f"{enemy['Name']} hits you but your protection nullifies the damage!",
+                            f"{enemy['Name']} attacks but your defense is too high, taking no damage!"])
+                    encounter_text(y)
+                else:
+                    battle_character["Health"] -= round(damage - battle_character["Defense"]/1.5)
+                    y = random.choice([f"{enemy['Name']} deals {round(damage - battle_character['Defense']/1.5)} damage to you!",
                             f"You take {round(damage - battle_character['Defense']/1.5)} damage!",
                             f"You are hit for {round(damage - battle_character['Defense']/1.5 )} damage!",
                             f"You have been inflicted {round(damage - battle_character['Defense']/1.5)} damage!",
@@ -1148,13 +1773,13 @@ def enemy_turn(battle_character):
                             f"You absorb {round(damage - battle_character['Defense']/1.5)} damage!",
                             f"{round(damage - battle_character['Defense']/1.5)} damage lands on you!",
                             f"You are wounded for {round(damage - battle_character['Defense']/1.5)} damage!"])
-                encounter_text(y)
+                    encounter_text(y)
                 encounter_text(f"Your Health: {battle_character['Health']} / {character['Health']}")
             elif character["Parry"] > parry_chance:
                 encounter_text(f"You have dealt {round(damage/5)} damage back to {enemy['Name']} with your parry!")
                 enemy["Health"] -= round(damage/5)
             elif character["Dodge"] > dodge_chance:
-                encounter_text(f"You have dealt {round(damage/10)} damage back to {enemy['Name']} with your dodge!")
+                encounter_text(f"You have dealt {round(damage/10)} damage back to {enemy['Name']} with your dodge's counterattack!")
                 enemy["Health"] -= round(damage/10)
         input_to_continue()
 
@@ -1179,7 +1804,7 @@ def enemy_turn(battle_character):
 
 
 
-def battle(encountered_enemies):
+def battle(encountered_enemies):    
     global enemies
     global character
     global battle_enemy_stat_list
@@ -1223,6 +1848,7 @@ def battle(encountered_enemies):
 
     # Victory Sequence
     clear()
+    quick_text("╔══════════════ VICTORY ══════════════╗")
     x = random.choice([f"You have emerged victorious from the battle!",
                       f"You stand victorious!",
                       f"You have conquered your foes in battle!",

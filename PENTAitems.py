@@ -9,6 +9,107 @@ from PENTAutilities import rarity_sort
 from PENTAlore import lore
 
 
+
+# Area and Zone Data
+
+zones = {"Starting Forest": ["Zone 1: Unnamed Path", 
+                             
+                             "Zone 2: May's Maze", 
+                             "Zone 3: Ancient World Tree", 
+                             "Final Zone: Forest Harbor"],
+         
+         "The Middle West": ["Zone 1: Oakmere Village", 
+                             "Zone 2: The LA County", 
+                             "Zone 3: Fernvale Village", 
+                             "Zone 4: Crystal Peak", 
+
+                             "Zone 5: Temple Emperor", 
+
+                             "Zone 6: The Wilderness",
+                             "Zone 7: Greywatch", 
+
+                             "Zone 8: Dungeon of the Shadow Emperor", 
+                             "Zone 9: The Glory Emperor's Castle",
+                             "Zone 10: The Dark Emperor's Lair",
+                             "Zone 11: Keep of the Fallen Emperor",
+                             "Zone 12: The Lost Fortress",
+                             "Zone 13: The Eternal Citadel",
+                             "Zone 14: The Tower of Eternity",
+
+                             "Zone 15: Ancient Battlefield",
+                             "Zone 16: Zone of Trials",
+
+                             "Zone 17: Willowford",
+                             "Zone 18: Duskwood Town",
+
+                             "Zone 19: The Imperial Outpost",
+
+                             "Zone 20: Ravencrest",
+                             "Final Zone: Headmaster Alina's Mansion"],
+
+
+         "Sefirot Academy": ["Zone 1: Academy Entrance",
+                             "Zone 2: Auditorium",
+
+                             "Zone 3: Class 2A - Sefirot Studies II",
+                             "Zone 4: Class 2B - Sefirot Combat II",
+                             "Zone 5: Class 2C - World History",
+
+                             "Zone 6: Library",
+                             "Zone 7: Academy Restaurant",
+                             "Zone 8: Sparring Arena",
+                             "Zone 9: Dormrooms",
+
+                             "Zone 10: Headmaster's Office",
+
+                             "Zone 11: School Rooftop",
+                             "Zone 11: Academy Lab", 
+                             "Zone 12: Music Room", 
+                             "Zone 13: The Hub", 
+
+                             "Zone 14: Academy Dungeon",
+
+                             "Zone 15: Class 3A - Sefirot Applications",
+                             "Zone 16: Class 3B - Advanced Combat",
+                             "Zone 17: Class 3C - Sefirot Applications II",
+
+                             "Zone 18: Gymnasium",
+
+                             "Zone 19: Class 1A - Sefirot Studies I",
+                             "Zone 20: Class 1B - Sefirot Combat I",
+                             "Zone 21: Class 1C - Introduction to Deities",
+
+                             "Zone 22: Festival Grounds",
+                             "Zone 23: Infirmary",
+                             "Zone 24: Observatory",
+                             "Zone 25: Staff Room",
+
+                             "Zone 26: Sefirot Measurement Lab",
+
+                             "Zone 27: (Maybe Illegal) Gambling Room",
+                             "Zone 28: Underground Fight Club",
+
+                             "Zone 29: Transportation Hub",
+
+                             "Zone 30: Training Room X",
+
+                             "Final Zone: Sefirot Tower"],
+        
+         "Haven City": ["Zone 1: Home", "Zone 2: The Immortal's Gamble", "Zone 3: ARENA X", "Zone 4: The Haven Building", "Zone 5: Skybridge", "Final Zone: The Core"],
+
+
+         "The Empire": ["Zone 1: The Imperial Gateway", "Zone 2: Imperial Palace Alpha", "Zone 3: Imperial Palace Omega", "Zone 4: Lake of Memories", "Final Zone: The Throne Room"],
+
+         "Mount Olympus": ["Zone 1: Unnamed Path", "Zone 2: Unnamed Path", "Zone 3: Unnamed Path", "Zone 4: Unnamed Path", "Zone 5: Unnamed Path"],
+         
+         "The Promised Land": ["Zone 1: Unnamed Path", "Zone 2: Unnamed Path", "Zone 3: Unnamed Path", "Zone 4: Unnamed Path", "Zone 5: Unnamed Path"],
+
+
+         "Serpent's Lair": ["Zone 1: Unnamed Path", "Zone 2: Unnamed Path", "Zone 3: Unnamed Path", "Zone 4: Unnamed Path", "Zone 5: Unnamed Path"]
+         }
+
+
+
 # Lore
 books = {"'Houlester's Guide to the 10 Sefirots' {DAMAGED}": {"Description": "A damaged book that explains pretty much everything to do about the Sefirots."},
          "'Jess' Journal' {DAMAGED}": {"Description": "A damaged journal that contains the thoughts and experiences of a person named Jess."}}
@@ -18,11 +119,16 @@ chest_count = []
 book_count = []
 
 
-weapons = {"'Shiny Sword' {Rare}": {"Description": "A useless sword that offers no benefits but it's aesthetic appeal.",
+weapons = {"'Shiny Sword' {Rare}": {"Description": "A useless sword that offers no benefits but its aesthetic appeal.",
                                     "Craft": ["Uncraftable"]},
            "'Shiny Sword Alpha' {Epic}": {"Strength": +100, "Mana": +100, "Description": "A sword that offers more benefits than just its aesthetic appeal.",
                                     "Craft": ["Uncraftable"]},
-           "'Saebr' {Rare}": {},
+           "'Saebr' {Rare}": {"Description": "One of the most popular and iconic weapon in the world of PENTA. A sword that is said to be able to cut through anything.",
+                              "Craft": ["Uncraftable"]},
+           "'Seibr' {Rare}": {"Description": "One of the most popular and iconic weapon in the world of PENTA. A sword that is said to be able to slice through anything.",
+                              "Craft": ["Uncraftable"]},
+           "'Saybr' {Rare}": {"Description": "One of the most popular and iconic weapon in the world of PENTA. A sword that is said to be able to pierce through anything.",
+                              "Craft": ["Uncraftable"]},
            "'Stick' {Common}": {"Strength": +5, "Description": "A regular stick.",
                                 "Craft": ["Uncraftable"]},
            "'Magic Stick' {Rare}": {"Mana": +100, "Description": "A not-so-regular stick infused with mana.",
@@ -51,9 +157,12 @@ weapons = {"'Shiny Sword' {Rare}": {"Description": "A useless sword that offers 
                                  "Craft": ["Uncraftable"]},
            "'Drainer Scythe' {Legendary}": {"Strength": +500, "Health": -200, "Mana": +1000, "Description": "A scythe made of a worthy adventurer's bones. Imbued with a lifesteal effect.",
                                             "Craft": ["Uncraftable"]},
-           "'Eel-Shark Ball": {},
-           "'Light Blade' {}": {},
-           "'Tennis Racket' {Common}": {}
+           "'Eel-Shark Ball' {Epic}": {"Strength": +100, "Health": +100, "Description": "A mysterious ball that seems to contain the essence of an eel and a shark.",
+                                       "Craft": ["Uncraftable"]},
+           "'Light Blade' {Rare}": {"Strength": +50, "Health": +50, "Description": "A blade that glows with a soft light.",
+                                   "Craft": ["Uncraftable"]},
+           "'Tennis Racket' {Common}": {"Strength": +10, "Health": +10, "Description": "A racket used for playing tennis.",
+                                         "Craft": ["'Stick' {Common}", "'Scrap' {Common}"]}
                                         
 }
 
@@ -66,7 +175,6 @@ armor = {"'Leather Armor' {Common}": {"Defense": +10, "Health": +10, "Descriptio
                                     "Craft": ["'Scrap' {Common}", "'Scrap' {Common}", "'Scrap' {Common}"]},
          "'Iron Armor' {Uncommon}": {"Defense": +40, "Health": +20, "Description": "Sturdy armor forged from iron.",
                                      "Craft": ["'Iron' {Uncommon}", "'Iron' {Uncommon}", "'Iron' {Uncommon}"]}}
-
 
 
 items = {"'Health Potion' {Common}": {"Heal": 100, "Description": "A potion that heals 100 health.",
@@ -82,6 +190,7 @@ items = {"'Health Potion' {Common}": {"Heal": 100, "Description": "A potion that
 
 
 all_items = weapons | armor | items
+
 
 drops = {"'Stick' {Common}": {"Description": "A regular stick."},
          "'Moss' {Common}": {"Description": "A flowerless plant that can be used to craft armor."},
@@ -112,6 +221,7 @@ enemy_loot_tables = {"Mossling": {"Loot": ["'Stick' {Common}", "'Moss' {Common}"
 
 def get_loot(enemy):
     temp_list = []
+    quick_text("╔══════════════ LOOT ══════════════╗")
     for loot in range(len(enemy_loot_tables[enemy]["Loot"])):
         chance = enemy_loot_tables[enemy]["Chance"][loot] / (100 - character["Luck"] * 0.5)
         roll = random.random()
@@ -188,6 +298,7 @@ def get_loot(enemy):
 
 def craft():
     global character
+    global weapons
     list_of_items = []
     crafting_circle = []
     clear()
@@ -238,25 +349,71 @@ def craft():
 
         elif materials == "c" or materials == "C":
             clear()
-            for recipe in all_items.keys():
-                if crafting_circle.sort() == all_items[recipe]["Craft"].sort() and len(crafting_circle) == len(all_items[recipe]["Craft"]):
+            some_random_variable = "no"
+            for recipe in weapons.keys():
+                if sorted(crafting_circle) == sorted(weapons.get(recipe).get("Craft")):
                     character["Inventory"].append(recipe)
-                    x = random.choice([f"{recipe.split()[-1]} CRAFT! You have created a {recipe}.",
-                                      f"{recipe.split()[-1]} CRAFT! You have successfully made a {recipe}.",
-                                      f"{recipe.split()[-1]} CRAFT! You have made a {recipe}.",
-                                      f"{recipe.split()[-1]} CRAFT! You have crafted a {recipe}.",
-                                      f"{recipe.split()[-1]} CRAFT! The crafting void reveals a {recipe}.",
-                                      f"{recipe.split()[-1]} CRAFT! A {recipe} floats out of the crafting void",
-                                      f"{recipe.split()[-1]} CRAFT! A {recipe} has been created."])
+                    rarity_of_craft = recipe.split()[-1].upper().replace("{", "").replace("}", "")
+                    x = random.choice([f"{rarity_of_craft} CRAFT! You have created a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have successfully made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have crafted a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! The crafting void reveals a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} floats out of the crafting void",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} has been created."])
                     quick_text(x)
                     input_to_continue()
                     clear()
                     some_random_variable = "yes"
                     break
+                else:
+                    pass
+            if some_random_variable == "yes":
+                continue
+            for recipe in armor.keys():
+                if sorted(crafting_circle) == sorted(armor.get(recipe).get("Craft")):
+                    character["Inventory"].append(recipe)
+                    rarity_of_craft = recipe.split()[-1].upper().replace("{", "").replace("}", "")
+                    x = random.choice([f"{rarity_of_craft} CRAFT! You have created a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have successfully made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have crafted a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! The crafting void reveals a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} floats out of the crafting void",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} has been created."])
+                    quick_text(x)
+                    input_to_continue()
+                    clear()
+                    some_random_variable = "yes"
+                    break
+                else:
+                    pass
+            if some_random_variable == "yes":
+                continue
+            for recipe in items.keys():
+                if sorted(crafting_circle) == sorted(items.get(recipe).get("Craft")):
+                    character["Inventory"].append(recipe)
+                    rarity_of_craft = recipe.split()[-1].upper().replace("{", "").replace("}", "")
+                    x = random.choice([f"{rarity_of_craft} CRAFT! You have created a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have successfully made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have made a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! You have crafted a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! The crafting void reveals a {recipe}.",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} floats out of the crafting void",
+                                      f"{rarity_of_craft} CRAFT! A {recipe} has been created."])
+                    quick_text(x)
+                    input_to_continue()
+                    clear()
+                    some_random_variable = "yes"
+                    break
+                else:
+                    pass
             if some_random_variable == "yes":
                 continue
             else:    
-                character["Inventory"].append(crafting_circle)
+                for item in crafting_circle:
+                    character["Inventory"].append(item)
+                crafting_circle = []
                 x = random.choice(["The crafting circle spews back the inserted materials back at you",
                                         "Nothing was crafted.",
                                         "The crafting circle reveals no item",
@@ -304,6 +461,7 @@ def allocate(attribute):
         quick_text(f"You have {character["POTENTIAL"]} POTENTIAL.")
         quick_text("Invest POTENTIAL (#), Back (b)")
         decision_s = question_input(">>> ")
+        clear()
         if decision_s == "b" or decision_s == "back" or decision_s == "B" or decision_s == "Back":
             break
         try:
@@ -332,6 +490,7 @@ def create(attribute):
         quick_text(f"You have {character["POTENTIAL"]} POTENTIAL.")
         quick_text("Create POTENTIAL (#), Back (b)")
         decision_s = question_input(">>> ")
+        clear()
         if decision_s == "b" or decision_s == "back" or decision_s == "B" or decision_s == "Back":
             break
         try:
@@ -445,7 +604,8 @@ def menu():
             clear()
             switch = False
             type_text(f"Current Location: {character['Location']}")
-            type_text(f"Current Coordinate: {character['Coordinate']}")
+            type_text(f"Zone Name: {zones[character['Location'].split('Zone')[0].strip()][0]}")
+            type_text(f"Current Coordinate: {character['Coordinates']}")
             input_to_continue()
             continue
         elif x == 'b':
@@ -478,11 +638,11 @@ def menu_stats():
 
 
     
-# FINISH THIS
 def inventory():
     global character
     craft_description_list = ["Craft", "Description"]
     while True:
+        character["Inventory"] = rarity_sort(character["Inventory"])
         clear()
         list_of_items = []
         rarity_order = ["{BROKEN}", "{DAMAGED}", "{UNFINISHED}", "{Common}", "{Uncommon}", "{Rare}", "{Epic}", "{Legendary}", "{Mythic}", "{Divine}", "{Special}"]
@@ -755,7 +915,6 @@ def inventory():
                     continue
                 elif decision == 'i':
                     clear()
-                    type_text(f"{list_of_items[x]} Info: ")
                     quick_text(f"╔═════════ {list_of_items[x]} ═════════╗")
                     quick_text(f"{books[list_of_items[x]]["Description"]}")
                     input_to_continue()
