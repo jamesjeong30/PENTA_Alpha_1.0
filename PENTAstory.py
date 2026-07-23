@@ -1,10 +1,10 @@
-from PENTAutilities import b_character_create, input_to_continue, gibtext, clear_last_line, dot_effect, quick_monologue, rarity, type_text, quick_text, question_input, loading, monologue, clear, encounter_text, encounter, three_choices, rarity_sort, custom_text
+from PENTAutilities import b_character_create, input_to_continue, gibtext, clear_last_line, dot_effect, quick_monologue, type_text, quick_text, question_input, loading, monologue, clear, encounter_text, encounter, three_choices, rarity, rarity_sort, custom_text, item_did_nothing, input_to_clear
 from PENTAutilities import character, enemies, bosses
 from PENTAutilities import enemy_moves, malkhut_moves
 from PENTAitems import weapons, armor, items, books, menu
 from PENTAbattle import astral_convergence, battle, battle_stat_analyze
 from PENTAmusic import AudioManager
-from PENTAitems import weapons, armor, items, books, chest_count, book_count
+from PENTAitems import weapons, armor, items, crafting_items, all_items, books, loot_drops, loot_sort, lore_drops
 from PENTAitems import save_game, load_game, delete_save
 import time
 import random
@@ -85,9 +85,10 @@ def intro():
     input_to_continue()
     character["Location"] = "Starting Forest Zone 1"
     loading()
+    clear()
 
 
-# intro to the starting forest area
+# intro to sfz1
 def starting_forest_zone_1():
     global character
     global sfz1_coords
@@ -398,64 +399,70 @@ def starting_forest_zone_1():
 # gameplay
 def sfz1():
     global character
+    trigger_1 = False
     while True:
         clear()
-        coordinates, selected_item = sfz1_tile()
-        character["Been There"].append(coordinates)
+        coordinates, selected_item, stay_or_not = sfz1_tile()
         clear()
-        text = random.choice([f"You move to coordinates {character['Coordinates']}.",
-                           f"You head towards coordinates {character['Coordinates']}.",
-                           f"You find yourself at coordinates {character['Coordinates']}.",
-                           f"You arrive at coordinates {character['Coordinates']}.",
-                           f"You step into coordinates {character['Coordinates']}."])
+        if stay_or_not == None:
+            text = random.choice([f"You move to coordinates {character['Coordinates']}.",
+                            f"You head towards coordinates {character['Coordinates']}.",
+                            f"You find yourself at coordinates {character['Coordinates']}.",
+                            f"You arrive at coordinates {character['Coordinates']}.",
+                            f"You step into coordinates {character['Coordinates']}."])
+        else:
+            text = f"You have stayed at coordinates {character['Coordinates']}."
         quick_text(text)
+        input_to_clear()
+
+        if selected_item != None:
+                type_text(f"You have used the item, {selected_item} at coordinates {character['Coordinates']}.")
 
     # All the coordinates
         if coordinates == [-967, 10]:
-            type_text("You find yourself at the remains of a recent battle.")
             if selected_item == "'Forest Key' {Epic}":
                 sfz1_coords.append([-968, 10])
+                character["Inventory"].remove("'Forest Key' {Epic}")
+                type_text("The 'Forest Key' {Epic} dissipates in your hands.")
                 type_text("The forest reveals a hidden door to your west.")
                 type_text("The door feels ominous, as if there is a huge presence behind the door.")
                 input_to_continue()
                 clear()
                 continue
+
+            elif selected_item != "'Forest Key' {Epic}":
+                item_did_nothing(selected_item)
+                continue
+
             elif selected_item == None:
+                type_text("You find yourself at the remains of a recent battle.")
                 type_text("Your senses tell you that there are no monsters nearby.")
                 input_to_continue()
                 clear()
                 continue
-            elif selected_item != "'Forest Key' {Epic}":
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
-                continue
 
         elif coordinates == [-967, 11]:
-            if not character["Chest"]["Chest_1"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif character["Chest"]["Chest_1"]:
+                type_text("You find youself in a small clearing surrounded by trees.")
+                type_text("You spot an opened chest.")
+                type_text("Your senses tell you that there are no monsters nearby.")
+                input_to_continue()
+                clear()
+                continue
+
+            elif not character["Chest"]["Chest_1"]:
                 while True:
-                    text = ["You discover a chest, half-buried in dust. It appears to be unopened.",
+                    text = ["You find youself in a small clearing surrounded by trees.",
+                            "You discover a chest, half-buried in dust. It appears to be unopened.",
                             "What do you do?"]
                     monologue(text)
                     x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
                     if x == "a":
-                        clear()
-                        quick_text("╔══════════════ CHEST ══════════════╗")
-                        chest_loot = {"'Leather' {Common}": 100, "'Iron' {Uncommon}": 50, 
-                                        "'Leather Armor' {Common}": 20, "'Scrap Armor' {Common}": 20, 
-                                        "'Iron Dagger' {Uncommon}": 5, "'Stone Hammer' {Common}": 5, "'Stone Sword' {Common}": 5, "'Stone Shield' {Common}": 5,
-                                        "'Mana Dust' {Epic}": 3, "'Mana Essence' {Legendary}": 1}
-                        for loot in chest_loot:
-                            chance = chest_loot[loot] / (100 - character["Luck"] * 0.5)
-                            roll = random.random()
-                            if roll <= chance:
-                                character["Inventory"].append(loot)
-                                rarity(chance, loot)
-                        character["Inventory"] = rarity_sort(character["Inventory"])
-                        character["Chest"]["Chest_1"] = True
-                        input_to_continue()
+                        loot_drops("Chest_1")
                         break
                     elif x == "m" or x == "menu":
                         menu()
@@ -468,75 +475,40 @@ def sfz1():
                         break
                 continue
 
-            elif selected_item == None:
-                type_text("You spot an opened chest.")
-                type_text("Your senses tell you that there are no monsters nearby.")
-                input_to_continue()
-                clear()
-                continue
-
-            else:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
-                continue
-
         elif coordinates == [-967, 12]:
-            if not character["Lore"]["Lore_1"]:
-                text = ["You find yourself in a slightly more swampy area of the forest.",
-                            "In the corner of your eye, you see something."]
-                monologue(text)
-                while True:
-                    text = ["You discover a dusty book with a leather cover.",
-                                "The pages seem slightly moldy and weathered.",
-                                "What do you do?"]
-                    monologue(text)
-                    x = question_input("Pick up the book (a), Ignore it (anything else): ").strip().lower()
-                    if x == "a":
-                        clear()
-                        type_text("You picked up the book and put it in your inventory.")
-                        character["Inventory"].append("'Houlester's Guide to the 10 Sefirots' {DAMAGED}")
-                        character["Lore"]["Lore_1"] = True
-                        character["Inventory"] = rarity_sort(character["Inventory"])
-                        break
-                    elif x == "m" or x == "menu":
-                        menu()
-                        continue
-                    else:
-                        clear()
-                        type_text("You have decided to ignore the book.")
-                        input_to_continue()
-                        break
-                continue
-            elif selected_item == "'Forest Key' {Epic}":
-                clear()
-                text = ["The forest reveals a mysterious farm to the north.",
+            if selected_item == "'Forest Key' {Epic}":
+                character["Inventory"].remove("'Forest Key' {Epic}")
+                text = ["The 'Forest Key' {Epic} dissipates in your hands",
+                        "The forest reveals a mysterious farm to the north.",
                         "As ominous as this farm seems, you don't feel any danger from it."]
                 monologue(text)
                 sfz1_coords.append([-967, 13])
                 input_to_continue()
                 continue
-            elif selected_item == None:
-                clear()
+
+            elif selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_1"]:
+                lore_drops("Lore_1")
+                continue
+
+            else:
                 type_text("You find yourself in a slightly more swampy area of the forest.")
                 type_text("You find nothing of value or notice around you.")
                 input_to_continue()
                 clear()
                 continue
-            else:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
-                continue
 
         elif coordinates == [-966, 12]:
-            if not character["Shrines"]["armageddon_shrine"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Shrines"]["armageddon_shrine"]:
                 while True:
-                    text = ["You discover an shrine made of blackstone.",
+                    text = ["You discover a shrine made of blackstone.",
                             "The shrine seems untounched by both man and nature.",
                             "What do you do?"]
                     quick_monologue(text)
@@ -557,19 +529,21 @@ def sfz1():
                                     "Genesis: But now, the Gods and humans live peacefully,",
                                     "Genesis: With a new generation of Emperors being cultivated."]
                             quick_monologue(text)
+                            break
                         elif x == "b":
                             text = ["You: What are shrines used for?",
                                     "Genesis: Shrines are practically trophies made for Emperors.",
                                     "Genesis: Whenever a human reaches the level of an Emperor,", 
                                     "Genesis: they receive a shrine to commend their achievement of becoming an Emperor."]
                             quick_monologue(text)
+                            break
                         elif x == "c":
                             text = ["You: I wanna break the shrine.",
                                     "Genesis: I wouldn't recommend that.",
                                     "Genesis: Even if an Emperor is dead,", 
                                     "Genesis: the destruction of their shrine may have consequences..."]
                             quick_monologue(text)
-                            x = question_input("Break Shrine (a), Leave (b): ").strip().lower()
+                            x = question_input("Break Shrine (a), Leave (anything else): ").strip().lower()
                             if x == "a":
                                 clear()
                                 dot_effect("BREAKING SHRINE")
@@ -577,12 +551,13 @@ def sfz1():
                                 type_text("You feel an ominous presence nearby.")
                                 type_text("You look around but don't find anyone.")
                                 character["Shrines"]["armageddon_shrine"] = True
-                            elif x == "b":
+                                break
+                            else:
                                 clear()
                                 type_text("You leave the shrine alone.")
                                 input_to_continue()
-                                continue
-                            
+                                break
+                           
                         else:
                             type_text("You nod and then ignore the shrine.")
                             input_to_continue()
@@ -599,32 +574,21 @@ def sfz1():
                         break
                 continue
                         
-            elif selected_item == None:
+            elif character["Shrines"]["armageddon_shrine"]:
                 type_text("You gaze upon a blackstone shrine that has been broken.")
                 type_text("A sudden chill runs down your back.")
                 type_text("You look around to find nothing.")
                 input_to_continue()
                 clear()
-                continue  
-
-            else:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
                 continue
 
         elif coordinates == [-966, 11]:
             chance = random.random()
             if selected_item != None:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
+                item_did_nothing(selected_item)
                 continue
             elif chance > 0.5:
+                type_text("You come across a flat clearing.")
                 type_text("You sense an enemy nearby...")
                 input_to_continue()
                 clear()
@@ -639,11 +603,7 @@ def sfz1():
 
         elif coordinates == [-966, 10]:
             if selected_item != None:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
+                item_did_nothing(selected_item)
                 continue
             while True:
                 type_text("There is a wrecked wooden house nearby.")
@@ -651,56 +611,49 @@ def sfz1():
                 if decision == "a":
                     clear()
                     if not character["Lore"]["Lore_2"]:
-                        text = ["You walk towards the wrecked wooden house.",
-                                    "Stumbling over its remains, you find a dusty journal on the ground.",
-                                    "It seems heavily weathered by the elements.",
-                                    "What do you do?"]
-                        monologue(text)
-                        x = question_input("Pick up the journal (a), Ignore it (anything else): ").strip().lower()
-                        if x == "a":
-                            clear()
-                            type_text("You picked up the journal and put it in your inventory.")
-                            character["Inventory"].append("'Jess' Journal' {DAMAGED}")
-                            character["Inventory"] = rarity_sort(character["Inventory"])
-                        else:
-                            type_text("You decide to ignore the journal")
-                            type_text("You walk back outside.")
-                            input_to_continue()
-                            break
+                        lore_drops("Lore_2")
+                        break
                     else:
-                        type_text("You look around inside the house to find nothing.")
+                        type_text("You look around inside the house, just to find nothing.")
                         type_text("You walk back outside.")
                         input_to_continue()
                         break
+
                 elif decision == "m" or decision == "menu":
                     menu()
                     continue
+
                 else:
+                    clear()
                     type_text("You decide to ignore the house.")
                     input_to_continue()
-                    break   
+                    break
+
             continue
 
         elif coordinates == [-965, 10]:
-            fourth_emperor_list = ["'Mana Dust' {Epic}", "'Mana Essence' {Legendary}", "'Mana Core' {Mythic}"]
             chance = random.random()
-            if selected_item in fourth_emperor_list:
-                text = ["???: Oh... Interesting.",
-                        f"???: A {selected_item}? Haven't seen any of those in a while...",
-                        "???: Traveler, I have taken a great interest in you.",
-                        "???: I am located in a cave south of where you are now.",
-                        "???: I'll clear the forest for a path to my cave if you wish to visit."
-                        "???: It would be a great pleasure to meet you."]
-                monologue(text)
-                sfz1_coords.append([-965, 9])
-                input_to_continue()
-                continue
-            elif selected_item != None:
-                x = random.choice([f"The item {selected_item} did nothing.",
-                              f"The item {selected_item} had to effect on your surroundings or yourself.",
-                              f"The item {selected_item} produced no effect."])
-                type_text(x)
-                input_to_continue()
+            fourth_emperor_list = ["'Mana Dust' {Epic}", "'Mana Essence' {Legendary}", "'Mana Core' {Mythic}"]
+            if trigger_1 == False:
+                for item in fourth_emperor_list:
+                    if item in character["Inventory"]:
+                        text = ["???: Oh... Interesting.",
+                                f"???: A {selected_item}? Haven't seen any of those in a while...",
+                                "???: Traveler, I have taken a great interest in you.",
+                                "???: I am located in a cave south of where you are now.",
+                                "???: I'll clear the forest for a path to my cave if you wish to visit."
+                                "???: It would be a great pleasure to meet you."]
+                        monologue(text)
+                        sfz1_coords.append([-965, 9])
+                        trigger_1 = True
+                        input_to_continue()
+                        clear()
+                        break
+                    else:
+                        pass
+  
+            if selected_item != None:
+                item_did_nothing(selected_item)
                 continue
 
             elif chance > 0.5:
@@ -710,37 +663,29 @@ def sfz1():
                 enemy = random.choice([["Forest Wisp"], ["Mossling"]])
                 battle(enemy)
                 continue
-                
+                    
             else:
                 type_text("You come across a flat clearing.")
                 type_text("However, your senses tells you that an enemy may be nearby.")
+                if trigger_1 == False:
+                    type_text("You also feel like someone is watching you...")
                 input_to_continue()
                 continue
 
         elif coordinates == [-965, 11]:
             if selected_item != None:
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
+                item_did_nothing(selected_item)
                 continue
             while True:
                 if not character["Corpse"]["Corpse_1"]:
                     text = ["You discover a human skeleton wearing armor.",
+                            "There may be stuff inside the armor."
                             "It doesn't seem to move.",
                             "What do you do?"]
                     monologue(text)
                     x = question_input("Loot the skeleton (a), Ignore it (anything else): ").strip().lower()
                     if x == "a":
-                        clear()
-                        quick_text("╔═══════ LOOT ═══════╗")
-                        quick_text("COMMON FIND! You received a 'Scrap Armor' {Common}")
-                        character["Inventory"].append("'Scrap Armor' {Common}")
-                        character["Inventory"] = rarity_sort(character["Inventory"])
-                        character["Corpse"]["Corpse_1"] = True
-                        input_to_continue()
-                        clear()
+                        loot_drops("Corpse_1")
                         break
                     elif x == "m" or x == "menu":
                         menu()
@@ -750,52 +695,40 @@ def sfz1():
                         input_to_continue()
                         clear()
                         break
-                else:
+
+                elif character["Corpse"]["Corpse_1"]:
                     type_text("You find a skeleton with no armor.")
+                    type_text("It doesn't seem to move.")
                     input_to_continue()
                     clear()
                     break
             continue
 
         elif coordinates == [-965, 12]:
-            if not character["End_of_Zone"]["sfz1"]:
-                time.sleep(1)
-                battle(["Rock Golem"])
-                clear()
-                while True:
-                    type_text("You have came to the end of Starting Forest's Zone 1.")
-                    decision = question_input("Proceed to Zone 2 (p), Stay (anything else)").strip().lower()
-                    if decision == "p":
-                        return None
-                    elif decision == "m" or decision == "menu":
-                        menu()
-                        continue
-                    else:
-                        type_text("You have decided to remain in Starting Forest's Zone 1.")
-                        input_to_continue()
-                        break
-                continue
-
-            elif selected_item == "'Forest Key' {Epic}":
-                text = ["The forest reveals a clearing to the east.",
+            if selected_item == "'Forest Key' {Epic}":
+                character["Inventory"].remove("'Forest Key' {Epic}")
+                text = ["The 'Forest Key' {Epic} dissipates in your hands.",
+                        "The forest reveals a clearing to the east.",
                         "Glancing at the clearing, you see something like an altar."]
                 monologue(text)
                 sfz1_coords.append([-964, 12])
                 input_to_continue()
                 continue
 
-            elif selected_item != "'Forest Key' {Epic}":
-                x = random.choice([f"The item {selected_item} did nothing."],
-                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
-                              f"The item {selected_item} produced no effect.")
-                type_text(x)
-                input_to_continue()
+            elif selected_item != None:
+                item_did_nothing(selected_item)
                 continue
-                        
-            else:
+
+
+            elif not character["End_of_Zone"]["sfz1"]:
+                type_text("You find yourself in a small clearing.")
+                type_text("You spot a long path leading out of the forest to the north.")
+                input_to_clear()
+                battle(["Rock Golem"])
+                character["End_of_Zone"]["sfz1"] = True
+                clear()
                 while True:
-                    clear()
-                    type_text("You have came to the end of Starting Forest's Zone 1.")
+                    type_text("You have came to the end of Starting Forest Zone 1.")
                     decision = question_input("Proceed to Zone 2 (p), Stay (anything else)").strip().lower()
                     if decision == "p":
                         character["Location"] = "Starting Forest Zone 2"
@@ -804,14 +737,35 @@ def sfz1():
                         menu()
                         continue
                     else:
-                        type_text("You have decided to remain in Starting Forest's Zone 1.")
+                        type_text("You have decided to remain in Starting Forest Zone 1.")
+                        input_to_continue()
+                        break
+                continue
+                        
+            elif character["End_of_Zone"]["sfz1"]:
+                while True:
+                    clear()
+                    type_text("You have came to the end of Starting Forest Zone 1.")
+                    decision = question_input("Proceed to Zone 2 (p), Stay (anything else)").strip().lower()
+                    if decision == "p":
+                        character["Location"] = "Starting Forest Zone 2"
+                        return None
+                    elif decision == "m" or decision == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You have decided to remain in Starting Forest Zone 1.")
                         input_to_continue()
                         break
                 continue
 
 # All the secret coordinates
         elif coordinates == [-968, 10]:
-            if not character["Hidden_Bosses"]["The Builder"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Hidden_Bosses"]["The Builder"]:
                 text = ["You open the heavy door to find a torch-lit hallway.",
                         "At the end of the hallway is a humanoid figure.",
                         "Clad in a farmer's outfit, the figure seemed to be inanimate.",
@@ -831,6 +785,7 @@ def sfz1():
                 quick_text("YOU ARE NOT JESS")
                 time.sleep(1)
                 battle(["The Builder"])
+                character["Hidden_Bosses"]["The Builder"] = True
                 clear()
                 text = ["You land your final blow on The Builder.",
                         "As The Builder stumbles to his knees, he looks up resentfully at you.",
@@ -839,21 +794,22 @@ def sfz1():
                 monologue(text)
                 custom_text("where are you...", 0.04)
                 time.sleep(0.5)
+                clear()
                 input_to_continue()
                 continue
 
-
-                        
             else:
-                while True:
-                    clear()
-                    type_text("You find yourself in a torch-lit hallway.")
-                    type_text("A pile of dust remains in the center.")
-                    input_to_continue()
-                    continue
+                type_text("You find yourself in a torch-lit hallway.")
+                type_text("A pile of dust remains in the center.")
+                input_to_continue()
+                continue
             
         elif coordinates == [-967, 13]:
-            if not character["Sponsor_Offer"]["The Farmer"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Sponsor_Offer"]["The Farmer"]:
                 text = ["You walk into the farm... if you could even call it one.",
                         "Around you, the remains of wooden fences and farming materials are scattered.",
                         "???: Jess?",
@@ -893,7 +849,7 @@ def sfz1():
                 quick_monologue(text)
                 time.sleep(0.5)
                 print("")
-                type_text("You look at Genesis for an explanation.")
+                type_text("You turn your head at Genesis for an explanation.")
                 text = ["Genesis: Sigh...",
                         "Genesis: When a person with a strong-enough will passes away,",
                         "Genesis: their unconsciousness turns into a ghost-like state, such as this farmer.",
@@ -907,6 +863,7 @@ def sfz1():
                         "Genesis: So if you want, you can inherit the power of this Sponsor.",
                         "Genesis: Although, you are restricted to only one Sponsor, so be careful!"]
                 quick_monologue(text)
+                input_to_clear()
                 type_text("You nod, and return your gaze back at the Farmer Ghost.")
                 character["Sponsor_Offer"]["The Farmer"] = True
                 decision = question_input("Accept Sponsor (a), Reject Sponsor (anything else): ").strip().lower()
@@ -937,12 +894,16 @@ def sfz1():
                 continue
                 
         elif coordinates == [-965, 9]:
-            if not character["Emperors"]["Fourth"]["Encounter"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Emperors"]["Fourth"]["Encounter"]:
                 text = ["The forest opens up, revealing a path down southwards.",
                         "As you walk down the path, you come across a well-sized cave.",
                         "Going inside the cave, you spot a humanoid figure inside, meditating.",
                         "The figure is wearing red, gold-trimmed robes. It seems noble in a sense."
-                        "You sense that they are not dangerous."]
+                        "You sense that they have no hostile intentions."]
                 monologue(text)
                 quick_text(f"???: Hello... Your name is {character["Name"]}, correct?")
                 x = three_choices("Yes. How did you know? (a)", "No. (b)", "Who are you? (c)")
@@ -968,12 +929,13 @@ def sfz1():
                 quick_monologue(text)
                 type_text("You see Genesis' eyes go wide in disbelief.")
                 text = ["Genesis: The Fourth Emperor? But it was recorded that you died in the Promised War!",
-                        "The Fourth Emperor: My death was... greatly exagerrated.",
+                        "The Fourth Emperor: My death was... greatly exaggerated.",
                         "The Fourth Emperor: Now I am here, in this cave, living a peaceful life.",
                         "The Fourth Emperor: You have no idea how much enlightening solitude and serenity are."]
                 quick_monologue(text)
                 while True:
                     x = three_choices("Attack The Fourth Emperor (a)", "Ask for Wisdom (b)", "Leave (c)")
+                    clear()
                     if x == "a":
                         text = ["You attack the emperor, only for him to smile once more.",
                                 "There is no resistance."]
@@ -988,15 +950,15 @@ def sfz1():
                         f"You have prevailed over your enemies!"])
                         encounter_text(x)
                         enemy = "The Fourth Emperor"
-                        character["Strength"] = character["Strength"] + character["Stat Inheritance"] * 10000
-                        character["Defense"] = character["Defense"] + character["Stat Inheritance"] * 10000
-                        character["Health"] = character["Health"] + character["Stat Inheritance"] * 10000
-                        character["Mana"] = character["Mana"] + character["Stat Inheritance"] * 10000
-                        x = random.choice([f"Your stat inheritance of {character['Stat Inheritance']*100}% has increased your stats from defeating the {enemy}!",
-                            f"Defeating the {enemy} has granted you a stat inheritance of {character['Stat Inheritance']*100}% to your stats!",
-                            f"You have gained a stat inheritance of {character['Stat Inheritance']*100}% to your stats by overcoming the {enemy}!",
-                            f"Your stats have been boosted by a stat inheritance of {character['Stat Inheritance']*100}% from vanquishing the {enemy}!",
-                            f"By besting the {enemy}, you have acquired a stat inheritance of {character['Stat Inheritance']*100}% to your stats!"])
+                        character["Strength"] += character["Stat Inheritance"] * 10000
+                        character["Defense"] += character["Stat Inheritance"] * 10000
+                        character["Health"] += character["Stat Inheritance"] * 10000
+                        character["Mana"] += character["Stat Inheritance"] * 10000
+                        x = random.choice([f"Your stat inheritance of {character['Stat Inheritance']*100}% has increased your stats from defeating the [{enemy}]!",
+                            f"Defeating the [{enemy}] has granted you a stat inheritance of {character['Stat Inheritance']*100}% to your stats!",
+                            f"You have gained a stat inheritance of {character['Stat Inheritance']*100}% to your stats by overcoming the [{enemy}]!",
+                            f"Your stats have been boosted by a stat inheritance of {character['Stat Inheritance']*100}% from vanquishing the [{enemy}]!",
+                            f"By besting the [{enemy}], you have acquired a stat inheritance of {character['Stat Inheritance']*100}% to your stats!"])
                         encounter_text(x)
                         encounter_text("You have been restored back to full health and mana!")
                         input_to_continue()
@@ -1004,61 +966,79 @@ def sfz1():
                         type_text("You walk out of the cave.")
                         input_to_continue()
                         character["Emperors"]["Fourth"]["Encounter"] = True
-                        continue
+                        break
                     elif x == "b":
                         text = ["The Fourth Emperor: Alright, listen closely, I will only say this once.",
-                                "The Fourth Emperor: The world loves the number 5.",
-                                "You: ..."]
+                                "The Fourth Emperor: The world loves the number 5."]
                         monologue(text)
+                        dot_effect("You: ")
                         character["Wisdom"] += 10
                         input_to_continue()
                         clear()
                         type_text("You walk out of the cave.")
                         input_to_continue()
                         character["Emperors"]["Fourth"]["Encounter"] = True
-                        continue
+                        break
                     elif x == "c":
-                        clear()
                         type_text("You walk out of the cave.")
                         input_to_continue()
                         character["Emperors"]["Fourth"]["Encounter"] = True
-                        continue
+                        break
 
                     else:
-                        clear()
-                        type_text("Invalid input.")
+                        text = ["You: ...", "The Fourth Emperor: ...",
+                                "You: ...", "The Fourth Emperor: ...",
+                                "You: ...", "The Fourth Emperor: ...",
+                                "You: ...", "The Fourth Emperor: ...",
+                                "You: ...", "The Fourth Emperor: ..."]
+                        quick_monologue(text)
+                        type_text("The Fourth Emperor blinks.")
+                        text = ["The Fourth Emperor: Argh. Fine, you win the staring contest...",
+                                "The Fourth Emperor: I acknowledge you."]
+                        quick_monologue(text)
+                        character["Chesed"] += 10
+                        type_text("You nod, then you walk out of the cave.")
                         input_to_continue()
-                        clear()
-                        continue
+                        character["Emperors"]["Fourth"]["Encounter"] = True
+                        break
+                continue
+
             else:
                 type_text("You see a cave... With nobody in it.")
+                type_text("There seems to be no traces of anyone being there...")
                 input_to_continue()
                 continue
 
         elif coordinates == [-964, 12]:
-            if "'Shiny Sword' {Rare}" in character["Inventory"]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif "'Shiny Sword' {Rare}" in character["Inventory"]:
                 text = ["You enter a clearing, with an altar in the middle.",
                         "The 'Shiny Sword' {Rare} flys out of your inventory and rests itself on top of the altar.",
                         "A gleaming light covers your vision.",
-                        "As the light dies down, a sword flies back into your inventory."]
+                        "As the light dies down, a slightly modified sword flies back into your inventory."]
                 monologue(text)
                 quick_text("EPIC FIND! 'Shiny Sword Alpha' {Epic}")
                 character["Inventory"].remove("'Shiny Sword' {Rare}")
                 character["Inventory"].append("'Shiny Sword Alpha' {Epic}")
                 input_to_continue()
                 continue
+
             else:
+                type_text("You find youself in a clearing, with an altar in the middle.")
                 type_text("The altar seems to offer no benefits but it's aesthetic appeal.")
                 input_to_continue()
                 continue
 
 
-# intro to sfz2, add the option to access menu during question_inputs
+
+# intro to sfz2
 def starting_forest_zone_2():
     global character
     loading()
-    character["Been There"] = [[-965, 99]]
-    character["Coordinates"] = [-965, 99]
+    character["Coordinates"] = [-964, 96]
     character["Location"] = "Starting Forest Zone 2"
     text = ["You proceed down the Unnamed Path.",
             "There seems to be nothing but thick forest,", 
@@ -1069,91 +1049,1397 @@ def starting_forest_zone_2():
             "Looking forward, you spot something in the far distance.",
             "It seems like you will have to walk for a while..."]
     monologue(text)
-    input_to_continue()
-    clear()
+    input_to_clear()
     dot_effect("Walking")
     clear()
-    stat_list = ["Strength", "Mana", "Defense", "Health"]
-    for stat in stat_list:
-        character[stat] += 10
-    text = ["After a few days and facing multiple enemies, you see something in the distance through the dark night.",
+    text = ["After a few hours, you see something in the distance through the dark night.",
             "While it started off as just a blob of grey in the distance...",
             "Getting closer and closer to the blob, you see that it is a humongous stone wall.",
             "The sheer height of the wall reaches beyond the skies and into the night-ridden stars.",
             "It seems to be impossible to go above the wall.",
-            "The moonlight illuminates a pathway to a section of a wall..."]
+            "The moonlight illuminates a pathway to a section of a wall...",
+            "The Unnamed Path ends here."]
     monologue(text)
-    input_to_continue()
-    while True:
-        clear()
-        decision = question_input("Walk on the pathway? Yes (y), No (anything else): ").strip().lower()
-        clear()
-        if decision == 'yes' or decision == 'y':
-            break
-        else:
-            quick_text("You decide to stay put.")
-            quick_text("But nothing happens.")
-            input_to_continue()
-            continue
-    text = ["You decide to walk down the moonlit path.",
-            "As you walk down the path, you see that the wall is covered in engravings of various things.",
-            "You see engravings of various Emperors, Gods, and Heroes.",
-            "You approach a section of the wall that has a gap in it.",
-            "The gap seems to be just big enough for you to fit through it."]
-    monologue(text)
-    input_to_continue()
-    while True:
-        clear()
-        decision = question_input("Enter the gap? Yes (y), No (anything else): ").strip().lower()
-        clear()
-        if decision == 'yes' or decision == 'y':
-            break
-        else:
-            quick_text("You decide to stay put.")
-            quick_text("But nothing happens.")
-            input_to_continue()
-            continue
-    text = ["You enter the gap, and find yourself in a new area.",
-            "The area is still covered in the same stone material as the wall.",
-            "However, the area seems to have some sort of a layout...",
-            "Looking up, the moon seems to shine even brighter than before...",
-            "You look back at the gap in the wall..."]
-    monologue(text)
-    input_to_continue()
-    clear()
-    time.sleep(1)
-    quick_text("RUMBLE RUMBLE RUMBLE")
-    time.sleep(0.2)
-    clear()
-    type_text("The gap in the wall closes behind you.")
-    input_to_continue()
-    clear()
-    text = ["Genesis: Oh my, it seems like our entrance has triggered some sort of mechanism.",
-            "Genesis: I'm afraid that we are now trapped...",
-            "Genesis: In some sort of... stone labyrinth.",
-            "Genesis: I have no idea how to get out of here, but we should try to find a way out!"]
-    quick_monologue(text)
-    input_to_continue()
-    clear()
+    input_to_clear()
 
 
 def sfz2():
     global character
     while True:
         clear()
-        coordinates, selected_item = sfz2_tile()
-        character["Been There"].append(coordinates)
+        coordinates, selected_item, stay_or_not = sfz2_tile()
         clear()
-        text = random.choice([f"You move to coordinates {character['Coordinates']}.",
-                           f"You head towards coordinates {character['Coordinates']}.",
-                           f"You find yourself at coordinates {character['Coordinates']}.",
-                           f"You arrive at coordinates {character['Coordinates']}.",
-                           f"You step into coordinates {character['Coordinates']}."])
+        if stay_or_not == None:
+            text = random.choice([f"You move to coordinates {character['Coordinates']}.",
+                            f"You head towards coordinates {character['Coordinates']}.",
+                            f"You find yourself at coordinates {character['Coordinates']}.",
+                            f"You arrive at coordinates {character['Coordinates']}.",
+                            f"You step into coordinates {character['Coordinates']}."])
+        else:
+            text = f"You have stayed at coordinates {character['Coordinates']}."
         quick_text(text)
+        input_to_clear()
 
-        # All the coordinates
-        if coordinates == [-971, 99]:
+        if selected_item != None:
+                type_text(f"You have used the item, {selected_item} at coordinates {character['Coordinates']}.")
+
+
+        # Initial Coords
+        if coordinates == [-965, 98]:
+            trigger = True
+
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    clear()
+                    text = ["You approach a section of the wall that has a gap in it.",
+                        "The gap seems to be just big enough for you to fit through it."]
+                    monologue(text)
+                    decision = question_input("Enter the gap? Yes (y), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == 'yes' or decision == 'y':
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        quick_text("You decide to stay put.")
+                        quick_text("But nothing happens.")
+                        trigger = False
+                        input_to_clear()
+                        break
+
+                if trigger == True:        
+                    text = ["You enter the gap, and find yourself in a new area.",
+                            "You have moved from coordinates [-965, 98] to coordiantes [-965, 99]."
+                            "The area is still covered in the same stone material as the wall.",
+                            "However, the area seems to have some sort of a layout...",
+                            "Looking up, the moon seems to shine even brighter than before...",
+                            "You look back at the gap in the wall..."]
+                    monologue(text)
+                    input_to_continue()
+                    clear()
+                    time.sleep(1)
+                    quick_text("RUMBLE RUMBLE RUMBLE")
+                    time.sleep(0.5)
+                    clear()
+                    type_text("The gap in the wall closes behind you.")
+                    input_to_continue()
+                    clear()
+                    text = ["Genesis: Oh my, it seems like our entrance has triggered some sort of mechanism.",
+                            "Genesis: I'm afraid that we are now trapped...",
+                            "Genesis: In some sort of... stone labyrinth.",
+                            "Genesis: I have no idea how to get out of here, but we should try to find a way out!"]
+                    quick_monologue(text)
+                    input_to_clear()
+                    character["Coordinates"] == [-965, 99]
+                    sfz2_coords.remove([-965, 98])
+                    continue
+
+                else:
+                    continue
+        
+        elif coordinates == [-964, 96]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    type_text("You have found yourself at one of the two ends of the Unnamed Path.")
+                    type_text("Would you like to go back to Starting Forest Zone 1?")
+                    decision = question_input("Yes (y), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "y" or decision == 'yes':
+                        dot_effect("Walking")
+                        character["Coordinates"] = [-965, 12]
+                        character["Location"] = "Starting Forest Zone 1"
+                        clear()
+                        type_text("You have returned to Starting Forest Zone 1.")
+                        input_to_clear()
+                        return
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You remained in Starting Forest Zone 2.")
+                        input_to_clear()
+                        break
+                continue
+
+        elif coordinates == [-964, 97]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                while True:
+                    type_text("You find youself in a somewhat more forested area.")
+                    type_text("You spot some carvings on a large piece of stone nearby.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the stone.",
+                                "The carvings reveal a square.",
+                                "Upon closer examination, you notice a few exclamation marks on the top left corner."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-965, 96]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Barrel"]["Barrel_1"]:
+                type_text("You find youself in a small clearing surrounded by trees.")
+                type_text("You spot an opened barrel.")
+                type_text("Your senses tell you that there are no monsters nearby.")
+                input_to_clear()
+                continue
+                
+            elif not character["Barrel"]["Barrel_1"]:
+                while True:
+                    text = ["You find youself in a small clearing surrounded by trees.",
+                            "You discover a barrel, half hidden by the greenery.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
+                    if x == "a":
+                        loot_drops("Barrel_1")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        clear()
+                        type_text("You ignore the barrel.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-965, 97]:
+            chance = random.random()
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif chance > 0.5:
+                type_text("You come across a flat clearing.")
+                type_text("You sense an enemy nearby...")
+                input_to_continue()
+                clear()
+                monster = random.choice([["Pebblekin"], ["Doofer"]])
+                battle(monster)
+                continue
+
+            else:
+                type_text("You come across a flat clearing.")
+                type_text("However, your senses tells you that an enemy may be nearby.")
+                input_to_continue()
+                continue
+
+
+        # Maze Coordinates, split between Monsters, Lore, Loot, and others
+
+        # Starting Coordinates
+        elif coordinates == [-965, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                text = ["You find youself at a stoney clearing.",
+                        "Looking south, you find rubble that blocked up the gap outside the maze.",
+                        "There seems to be nothing significant here."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+        # Lore Coordinates
+        elif coordinates == [-967, 111]:
+            if selected_item == "'Stone Key' {Epic}":
+                character["Inventory"].remove("'Stone Key' {Epic}")
+                text = ["The 'Stone Key' {Epic} dissipates in your hands",
+                        "The maze reveals a mysterious section to the north."]
+                monologue(text)
+                sfz2_coords.append([-967, 112])
+                input_to_continue()
+                continue
+
+            elif selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_3"]:
+                lore_drops("Lore_3")
+                continue
+
+            else:
+                type_text("You find yourself in the same old stony environment.")
+                type_text("You find nothing of value or notice around you.")
+                input_to_continue()
+                clear()
+                continue
+        
+        elif coordinates == [-961, 111]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_4"]:
+                lore_drops("Lore_4")
+                continue
+
+            else:
+                type_text("You find yourself in the same old stony environment.")
+                type_text("You find nothing of value or notice around you.")
+                input_to_continue()
+                clear()
+                continue
+        
+        elif coordinates == [-963, 109]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                while True:
+                    type_text("You find youself in a somewhat more mossy-stony area.")
+                    type_text("You spot some carvings on a stone wall nearby.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal an arrow."
+                                "The arrow initially points downwards, then shifts leftwards, then down again."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-960, 108]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_5"]:
+                lore_drops("Lore_5")
+                continue
+
+            else:
+                type_text("You find yourself in the same old stony environment.")
+                type_text("You find nothing of value or notice around you.")
+                input_to_continue()
+                clear()
+                continue
+        
+        elif coordinates == [-968, 107]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                while True:
+                    type_text("You find youself in an area made up more of cobblestone than regular stone.")
+                    type_text("You spot some carvings on  wall nearby.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal an arrow."
+                                "The arrow initially points rightwards, then shifts downwards.",
+                                "There also seem to be huge scratch marks next to the carvings."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-971, 106]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_6"]:
+                lore_drops("Lore_6")
+                continue
+
+            elif character["Lore"]["Lore_6"]:
+                text = ["You find youself in an area made of mostly dirt and stone.",
+                        "Around you are hollowed out crevaces in the walls.",
+                        "They seemed to be abandoned."]
+                monologue(text)
+                input_to_clear()
+                continue
+        
+        elif coordinates == [-965, 106]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                while True:
+                    type_text("You find youself in an area almost completely made up of obsidian.")
+                    type_text("You spot some mutliple scratches on the obsidian wall nearby.")
+                    decision = question_input("Examine scratches? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The scratches run around a meter deep into the wall.",
+                                "You get a bad feeling about this..."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the scratches.")
+                        input_to_clear()
+                        break
+                continue
+
+        elif coordinates == [-959, 106]:
+            if selected_item == "'Stone Key' {Epic}":
+                character["Inventory"].remove("'Stone Key' {Epic}")
+                text = ["The 'Stone Key' {Epic} dissipates in your hands",
+                        "The maze reveals a mysterious section to the east."]
+                monologue(text)
+                sfz2_coords.append([-958, 106])
+                input_to_continue()
+                continue
+
+            elif selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_7"]:
+                lore_drops("Lore_7")
+                continue
+
+            else:
+                type_text("You find yourself in a stony clearing, cleaned free from monsters.")
+                type_text("You see an empty pedastal nearby.")
+                type_text("But there seems to be nothing valuable nearby...")
+                input_to_clear()
+                continue
+
+        elif coordinates == [-959, 105]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                text = ["You find yourself in a stony clearing, cleaned free from monsters.",
+                        "Looking up, you find empty nests made of stone.",
+                        "You sense no movement or life from these nests..."]
+                monologue(text)
+                input_to_clear()
+                continue
+        
+        elif coordinates == [-968, 104]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    type_text("You find youself in an area made up more of cobblestone than regular stone.")
+                    type_text("You spot some carvings on a stone wall nearby.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal an arrow."
+                                "The arrow initially points upwards, then shifts rightwards, then down."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+
+        elif coordinates == [-971, 103]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif not character["Lore"]["Lore_8"]:
+                lore_drops("Lore_8")
+                continue
+
+            elif character["Lore"]["Lore_8"]:
+                text = ["You find yourself in a clearing, cleaned free from monsters.",
+                        "You spot a dirt-stone wall and a mossy wall in the west and east directions respectively.",
+                        "Nearby is an empty pedastal.",
+                        "There seems to be nothing valuable nearby..."]
+                monologue(text)
+                input_to_clear
+                continue
+
+        elif coordinates == [-969, 103]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_9"]:
+                lore_drops("Lore_9")
+                continue
+
+            elif character["Lore"]["Lore_9"]:
+                text = ["You find yourself in a mossy-stony environment.",
+                        "There seems to be nothing valuable nearby."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+        elif coordinates == [-966, 101]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    type_text("You find youself in the usual stony environment.")
+                    type_text("You spot some marks on a stone wall nearby.")
+                    decision = question_input("Examine the marks? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "Taking a closer look, you see that the marks are words.",
+                                "They read out, 'Beware of the kee...",
+                                "The marks seem to end there mid-sentence."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the marks.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-964, 101]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            while True:
+                type_text("You spot a crevace in the wall.")
+                type_text("Looking at it more closely, you see that it's a makeshift house.")
+                decision = question_input("Go inside the house (a), Ignore it (anything else): ").strip().lower()
+                if decision == "a":
+                    clear()
+                    if not character["Lore"]["Lore_10"]:
+                        lore_drops("Lore_10")
+                        break
+                    else:
+                        type_text("You look around inside the house, just to find nothing.")
+                        type_text("You walk back outside.")
+                        input_to_continue()
+                        break
+
+                elif decision == "m" or decision == "menu":
+                    menu()
+                    continue
+
+                else:
+                    clear()
+                    type_text("You decide to ignore the house.")
+                    input_to_continue()
+                    break
+            continue
+
+        elif coordinates == [-962, 101]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                while True:
+                    type_text("You find youself in the usual stony environment.")
+                    type_text("There doesn't seem to be any monsters nearby...")
+                    type_text("You spot some carvings on a wall.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal a drawing of a battle.",
+                                "A battle between a humanoid figure and some kind of monster..."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-968, 100]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    type_text("You find youself in the usual stony environment.")
+                    type_text("You spot some carvings on a stone wall nearby.")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal an arrow."
+                                "The arrow initially points upwards, then shifts rightwards, then down."]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+            
+        elif coordinates == [-970, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif not character["Lore"]["Lore_11"]:
+                lore_drops("Lore_11")
+                continue
+            
+            elif character["Lore"]["Lore_11"]:
+                text = ["You find yourself in the same old stony environment.",
+                        "There seems to be nothing valuable nearby..."]
+                monologue(text)
+                input_to_clear()
+                continue
+        
+        elif coordinates == [-967, 99]:
+            if selected_item == "'Stone Key' {Epic}":
+                character["Inventory"].remove("'Stone Key' {Epic}")
+                text = ["The 'Stone Key' {Epic} dissipates in your hands",
+                        "The maze reveals a mysterious section to the south."]
+                monologue(text)
+                sfz2_coords.append([-967, 98])
+                input_to_clear()
+                continue
+
+            elif selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            else:
+                text = ["You find yourself in the same old stony environment.",
+                        "Looking north, you find a wall."
+                        "On the wall, there seems to be scratches made by a beast of some sort.",
+                        "Interestingly, the wall southwards seems to have no traces..."]
+                monologue(text)
+                input_to_clear()
+                continue
+        
+        elif coordinates == [-964, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            else:
+                while True:
+                    type_text("You find youself in an area made up of the usual stone.")
+                    type_text("You spot some carvings on a stone wall nearby, they seem to resemble words")
+                    decision = question_input("Examine carvings? Yes (a), No (anything else): ").strip().lower()
+                    clear()
+                    if decision == "a":
+                        text = ["You walk close to the wall.",
+                                "The carvings reveal a message.",
+                                "'Exit is near. -Tobias'"]
+                        monologue(text)
+                        input_to_clear()
+                        break
+                    elif decision == 'm' or decision == 'menu':
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the carvings.")
+                        input_to_clear()
+                        break
+                continue
+                
+
+        # Loot Coordinates
+        elif coordinates == [-971, 111]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif character["Cache"]["Cache_1"]:
+                type_text("You find youself in the corner of the maze.")
+                type_text("The dirt-stone walls towers over you.")
+                type_text("There seems to be nothing valuable around...")
+                type_text("Your senses tell you that there are no monsters nearby.")
+                input_to_continue()
+                clear()
+                continue
+
+            elif not character["Cache"]["Cache_1"]:
+                while True:
+                    text = ["You find youself in the corner of the maze.",
+                            "You discover a cache, half-buried in the dirt. It appears to be unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the cache (a), Ignore it (anything else): ").strip().lower()
+                    if x == "a":
+                        loot_drops("Cache_1")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        clear()
+                        type_text("You ignore the cache.")
+                        input_to_clear()
+                        break
+                continue
+
+        elif coordinates == [-969, 111]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_2"]:
+                type_text("You find youself in the usual stony environment.")
+                type_text("You spot a looted skeleton.")
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_2"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You discover a skeleton with a hammer-like weapon resting at its side.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the weapon (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_2")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the skeleton.")
+                        input_to_clear()
+                        break
+                continue 
+
+        elif coordinates == [-966, 111]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_2"]:
+                type_text("You find youself in the usual stony environment.")
+                type_text("You spot a looted skeleton.")
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_2"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You discover a skeleton with a hammer-like weapon resting at its side.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the weapon (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_2")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the skeleton.")
+                        input_to_clear()
+                        break
+                continue 
+
+        elif coordinates == [-963, 111]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Chest"]["Chest_2"]:
+                text = ["You find youself in the usual stony environment.",
+                        "But looking southward, you find that the wall there is made up of mossy stone.",
+                        "You spot an opened chest."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Chest"]["Chest_2"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "But looking southward, you find that the wall there is made up of mossy stone.",
+                            "You spot an unopened chest.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Chest_2")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the chest.")
+                        input_to_clear()
+                        break
+                continue 
+        
+        elif coordinates == [-965, 110]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Barrel"]["Barrel_2"]:
+                text = ["You find youself in the usual stony environment.",
+                        "You spot an opened barrel."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Barrel"]["Barrel_2"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You spot an unopened barrel.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the barrel (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Barrel_2")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the barrel.")
+                        input_to_clear()
+                        break
+                continue
+        
+        elif coordinates == [-964, 110]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+
+            elif character["Corpse"]["Corpse_3"]:
+                type_text("You find youself in the usual stony environment.")
+                type_text("You spot a looted skeleton.")
+                input_to_clear()
+                continue
+            
+            elif not character["Corpse"]["Corpse_3"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You spot a skeleton with a pouch inside its ribcage.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the pouch (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_3")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the skeleton.")
+                        input_to_clear()
+                        break
+
+        elif coordinates == [-971, 109]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_4"]:
+                text = ["You find youself safe from monsters in your current coordinates.",
+                        "Looking west, you find a wall made up of dirt-stone.",
+                        "Looking east, you find a wall made up of cobblestone.",
+                        "You spot a looted skeleton."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_4"]:
+                while True:
+                    text = ["You find youself safe from monsters in your current coordinates.",
+                            "Looking west, you find a wall made up of dirt-stone.",
+                            "Looking east, you find a wall made up of cobblestone.",
+                            "You spot a skeleton with a pouch inside its skull.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the pouch (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_4")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the skeleton.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-962, 109]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Cache"]["Cache_2"]:
+                text = ["You find youself in a mossy part of the maze.",
+                        "You spot an opened cache."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Cache"]["Cache_2"]:
+                while True:
+                    text = ["You find youself in a mossy part of the maze.",
+                            "You spot an unopened cache.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the cache (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Cache_2")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the cache.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-959, 109]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Chest"]["Chest_3"]:
+                text = ["You find youself in the usual stony environment.",
+                        "You spot an opened chest."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Chest"]["Chest_3"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You spot a chest made of obsidian...",
+                            "You feel a strange sense of danger around it.",
+                            "It seems unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Chest_3")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the chest.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-967, 107]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Chest"]["Chest_4"]:
+                text = ["You find youself in a more cobblestone-like area of the maze.",
+                        "You spot an opened chest."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Chest"]["Chest_4"]:
+                while True:
+                    text = ["You find youself in a more cobblestone-like area of the maze.",
+                            "You spot a chest made of cobblestone...",
+                            "It seems unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Chest_4")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the chest.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-963, 107]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Barrel"]["Barrel_3"]:
+                text = ["You find youself in a more mossy-like area of the maze.",
+                        "You spot an opened barrel."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Barrel"]["Barrel_3"]:
+                while True:
+                    text = ["You find youself in a more mossy-like area of the maze.",
+                            "You spot a barrel...",
+                            "It seems unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the barrel (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Barrel_3")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the barrel.")
+                        input_to_clear()
+                        break
+
+        elif coordinates == [-961, 107]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Cache"]["Cache_3"]:
+                text = ["You find youself in a more mossy-like area of the maze.",
+                        "However, you find in the east, a wall made of the normal usual stone.",
+                        "You spot an opened cache."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Cache"]["Cache_3"]:
+                while True:
+                    text = ["You find youself in a more mossy-like area of the maze.",
+                            "However, you find in the east, a wall made of the normal usual stone.",
+                            "You spot a cache...",
+                            "It seems unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the cache (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Cache_3")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the cache.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-962, 104]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Cache"]["Cache_4"]:
+                text = ["You find youself in the usual stony environment.",
+                        "You spot an opened cache."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Cache"]["Cache_4"]:
+                while True:
+                    text = ["You find youself in the usual stony environment.",
+                            "You spot a cache...",
+                            "It seems unopened.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the cache (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Cache_4")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the cache.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-968, 103]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Barrel"]["Barrel_4"]:
+                text = ["You find youself in a more cobble-like area of the maze.",
+                        "You spot an opened barrel."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Barrel"]["Barrel_4"]:
+                while True:
+                    text = ["You find youself in a more cobble-like area of the maze.",
+                            "You spot an unopened barrel.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the barrel (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Barrel_4")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the barrel.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-968, 102]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_5"]:
+                text = ["You find yourself in a mossy-stony area of the maze.",
+                        "Hidden in a crevace is a skeleton.",
+                        "It doesn't seem to have anything useful on it."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_5"]:
+                while True:
+                    text = ["You find yourself in a mossy-stony area of the maze.",
+                            "Hidden in a crevace is a skeleton with a pouch in its eye socket.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the pouch (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_5")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the pouch.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-962, 102]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Chest"]["Chest_5"]:
+                text = ["You find yourself in the usual stony environment.",
+                        "Buried under some rubble is an opened chest."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Chest"]["Chest_5"]:
+                while True:
+                    text = ["You find yourself in the usual stony environment.",
+                            "Buried under some rubble is an opened chest.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take and open the chest (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Chest_5")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the chest.")
+                        input_to_clear()
+                        break
+
+        elif coordinates == [-959, 102]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_6"]:
+                text = ["You find yourself in a mossy-stony area of the maze.",
+                        "Hidden in a crevace is a skeleton.",
+                        "It doesn't seem to have anything useful on it."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_6"]:
+                while True:
+                    text = ["You find yourself in a mossy-stony area of the maze.",
+                            "Hidden in a crevace is a skeleton with a pouch in its eye socket.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the pouch (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_6")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the pouch.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-961, 101]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Barrel"]["Barrel_5"]:
+                text = ["You find yourself in the usual stony environment of the maze.",
+                        "You see an opened barrel...",
+                        "It doesn't seem to have anything useful in it."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Barrel"]["Barrel_5"]:
+                while True:
+                    text = ["You find yourself in the usual stony environment of the maze.",
+                            "A barrel sits nearby.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the barrel (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Barrel_5")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the barrel.")
+                        input_to_clear()
+                        break
+
+        elif coordinates == [-965, 100]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_7"]:
+                text = ["You find yourself in the usual stony environment of the maze.",
+                        "You spot a skeleton nearby.",
+                        "It doesn't seem to have anything useful in it."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_7"]:
+                while True:
+                    text = ["You find yourself in the usual stony environment of the maze.",
+                            "You spot a skeleton nearby.",
+                            "It seems to be holding something in its bony hands.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the item (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_7")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the skeleton and the item.")
+                        input_to_clear()
+                        break
+            
+        elif coordinates == [-969, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Cache"]["Cache_5"]:
+                text = ["You find yourself in the usual stony environment of the maze.",
+                        "You find the remnants of a cache nearby.",
+                        "It doesn't seem to have anything useful in it."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Cache"]["Cache_5"]:
+                character["Health"] -= 1
+                while True:
+                    text = ["You find yourself in the usual stony environment of the maze.",
+                            "You stub your toe on something metallic.",
+                            "MINUS ONE HEALTH!"
+                            "Looking down, it seems to be an unopened cache.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the cache (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Cache_7")
+                        clear()
+                        type_text("You decide to 'kill' the cache in retaliation of your stubbed toe...")
+                        input_to_clear()
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You ignore the cache.")
+                        input_to_clear()
+                        break
+        
+        elif coordinates == [-966, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Chest"]["Chest_6"]:
+                text = ["You find yourself in the usual stony environment of the maze.",
+                        "Nearby is an opened chest.",
+                        "There seems to be nothing useful around..."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Chest"]["Chest_6"]:
+                while True:
+                    text = ["You find yourself in the usual stony environment of the maze.",
+                            "Nearby is a chest.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Open the chest (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Chest_6")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the chest.")
+                        input_to_clear()
+                        break
+
+        elif coordinates == [-962, 99]:
+            if selected_item != None:
+                item_did_nothing(selected_item)
+                continue
+            
+            elif character["Corpse"]["Corpse_8"]:
+                text = ["You find yourself in the usual stony environment of the maze.",
+                        "Nearby is a skeleton that doesn't seem too notable.",
+                        "There seems to be nothing useful around..."]
+                monologue(text)
+                input_to_clear()
+                continue
+
+            elif not character["Corpse"]["Corpse_8"]:
+                while True:
+                    text = ["You find yourself in the usual stony environment of the maze.",
+                            "Nearby is a skeleton with some sort of weapon in its ribcage.",
+                            "What do you do?"]
+                    monologue(text)
+                    x = question_input("Take the weapon (a), Ignore it (anything else): ").strip().lower()
+                    clear()
+                    if x == "a":
+                        loot_drops("Corpse_8")
+                        break
+                    elif x == "m" or x == "menu":
+                        menu()
+                        continue
+                    else:
+                        type_text("You decide to ignore the skeleton and the weapon.")
+                        input_to_clear()
+                        break
+
+
+        # Monster Coordinates
+        elif coordinates == []:
             ...
+
+        # Shrine Coordinates
+
+
+        # Shop Coordinates
+
+
+        # Button/Lever Coordinates
+
+
+        # MiniBOSS Coordinates
+
+
+        # Secret Coordinates
+
+
+
 
 
 
@@ -1166,4 +2452,4 @@ def sfz2():
         
 
 if __name__ == "__main__":
-    main()
+    battle(["Mossling"])

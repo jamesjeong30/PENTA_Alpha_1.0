@@ -3,7 +3,7 @@ from PENTAutilities import question_input, type_text, input_to_continue, clear, 
 from PENTAutilities import character
 from PENTAitems import menu
 
-# Starting Forest Zone/Tile
+# Starting Forest Zone/Tile, DONT ADD SECRET COORDS HERE
 
 sfz1_coords = [[-967, 10], [-967, 11], [-967, 12], [-966, 12], [-966, 11], [-966, 10], [-965, 10], [-965, 11], [-965, 12]]
 
@@ -23,7 +23,7 @@ sfz2_coords = [[-971, 99], [-970, 99], [-969, 99], [-968, 99], [-967, 99], [-966
                [-971, 111], [-970, 111], [-969, 111], [-968, 111], [-967, 111], [-966, 111], [-965, 111], [-964, 111], [-963, 111], [-962, 111], [-961, 111], [-960, 111], [-959, 111]]
 
 
-sfz3_coords = []
+sfz3_coords = [[-900, 105], [-899, 105], [-899, 106], [-898, 106], [-897, 106], [-894, 105]]
 
 
 def sfz1_tile():
@@ -50,6 +50,7 @@ def sfz1_tile():
                      "James: You know what, that doesn't matter anymore.",
                      "James: You have proved yourself.",
                      "James: Through sheer perseverence and/or luck,",
+                     "James: Or console hacks...",
                      "James: For the ultimate power.",
                      "You feel divine energy flowing through your body.",
                      "All of your stats has been massively increased!",
@@ -60,7 +61,7 @@ def sfz1_tile():
                 input_to_continue()
                 continue
             else:
-                return character["Coordinates"], None
+                return character["Coordinates"], None, "Stay"
             
         elif decision == "m" or decision == "menu":
             menu()
@@ -68,7 +69,7 @@ def sfz1_tile():
         elif decision == "n":
             if [character["Coordinates"][0], character["Coordinates"][1] + 1] in sfz1_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] + 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
                     x = random.choice(["The bushes are too thick to pass.",
                                       "The thick trees of the Starting Forest blocks your path.",
@@ -81,7 +82,7 @@ def sfz1_tile():
         elif decision == "s":
             if [character["Coordinates"][0], character["Coordinates"][1] - 1] in sfz1_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] - 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
                     x = random.choice(["The bushes are too thick to pass.",
                                       "The thick trees of the Starting Forest blocks your path.",
@@ -94,7 +95,7 @@ def sfz1_tile():
         elif decision == "e":
             if [character["Coordinates"][0] + 1, character["Coordinates"][1]] in sfz1_coords:
                 character["Coordinates"] = [character["Coordinates"][0] + 1, character["Coordinates"][1]]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
                     x = random.choice(["The bushes are too thick to pass.",
                                       "The thick trees of the Starting Forest blocks your path.",
@@ -107,7 +108,7 @@ def sfz1_tile():
         elif decision == "w":
             if [character["Coordinates"][0], character["Coordinates"][1] - 1] in sfz1_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] - 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
                     x = random.choice(["The bushes are too thick to pass.",
                                       "The thick trees of the Starting Forest blocks your path.",
@@ -139,7 +140,7 @@ def sfz1_tile():
                       input_to_continue()
                       continue
                  
-                 return character["Coordinates"], character["Inventory"][selected_item - 1]
+                 return character["Coordinates"], character["Inventory"][selected_item - 1], None
         
 
 
@@ -184,7 +185,7 @@ def sfz2_tile():
                 input_to_continue()
                 continue
             else:
-                return character["Coordinates"], None
+                return character["Coordinates"], None, "Stay"
             
         elif decision == "m" or decision == "menu":
             menu()
@@ -192,52 +193,52 @@ def sfz2_tile():
         elif decision == "n":
             if [character["Coordinates"][0], character["Coordinates"][1] + 1] in sfz2_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] + 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
-                    x = random.choice(["The bushes are too thick to pass.",
-                                      "The thick trees of the Starting Forest blocks your path.",
+                    x = random.choice(["The walls are too tall to be passed.",
+                                      "The thick walls of the maze blocks your path.",
                                       "You cannot proceed in that direction.",
-                                      "You face a wall of thick greenery.",
-                                      "A wall of greenery blocks the direction."])
+                                      "You face a wall of stone.",
+                                      "A wall of stone blocks the direction."])
                     type_text(x)
                     input_to_continue()
                     continue
         elif decision == "s":
             if [character["Coordinates"][0], character["Coordinates"][1] - 1] in sfz2_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] - 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
-                    x = random.choice(["The bushes are too thick to pass.",
-                                      "The thick trees of the Starting Forest blocks your path.",
+                    x = random.choice(["The walls are too tall to be passed.",
+                                      "The thick walls of the maze blocks your path.",
                                       "You cannot proceed in that direction.",
-                                      "You face a wall of thick greenery.",
-                                      "A wall of greenery blocks the direction."])
+                                      "You face a wall of stone.",
+                                      "A wall of stone blocks the direction."])
                     type_text(x)
                     input_to_continue()
                     continue
         elif decision == "e":
             if [character["Coordinates"][0] + 1, character["Coordinates"][1]] in sfz2_coords:
                 character["Coordinates"] = [character["Coordinates"][0] + 1, character["Coordinates"][1]]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
-                    x = random.choice(["The bushes are too thick to pass.",
-                                      "The thick trees of the Starting Forest blocks your path.",
+                    x = random.choice(["The walls are too tall to be passed.",
+                                      "The thick walls of the maze blocks your path.",
                                       "You cannot proceed in that direction.",
-                                      "You face a wall of thick greenery.",
-                                      "A wall of greenery blocks the direction."])
+                                      "You face a wall of stone.",
+                                      "A wall of stone blocks the direction."])
                     type_text(x)
                     input_to_continue()
                     continue
         elif decision == "w":
             if [character["Coordinates"][0], character["Coordinates"][1] - 1] in sfz2_coords:
                 character["Coordinates"] = [character["Coordinates"][0], character["Coordinates"][1] - 1]
-                return character["Coordinates"], None
+                return character["Coordinates"], None, None
             else:
-                    x = random.choice(["The bushes are too thick to pass.",
-                                      "The thick trees of the Starting Forest blocks your path.",
+                    x = random.choice(["The walls are too tall to be passed.",
+                                      "The thick walls of the maze blocks your path.",
                                       "You cannot proceed in that direction.",
-                                      "You face a wall of thick greenery.",
-                                      "A wall of greenery blocks the direction."])
+                                      "You face a wall of stone.",
+                                      "A wall of stone blocks the direction."])
                     type_text(x)
                     input_to_continue()
                     continue
@@ -263,8 +264,7 @@ def sfz2_tile():
                       input_to_continue()
                       continue
                  
-                 return character["Coordinates"], character["Inventory"][selected_item - 1]
-        
+                 return character["Coordinates"], character["Inventory"][selected_item - 1], None
 
 
         else:

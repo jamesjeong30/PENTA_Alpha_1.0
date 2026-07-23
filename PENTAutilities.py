@@ -19,14 +19,13 @@ character = {
 
     # Stats
     "Name": "Player",
-    "POTENTIAL": 0,
     "Sponsor": None,
     "Held_Weapon": None,
     "Held_Armor": None,
     "Strength": 100,
     "Defense": 10,
     "Health": 100,
-    "Mana": 500,
+    "Mana": 200,
     "Mana Regen": 25,
     "Wisdom": 0,
     "Luck": 0,
@@ -35,6 +34,10 @@ character = {
     "Critical": 1,
     "Stat Inheritance": 0.01,
     "Skill": "???",
+
+    # Currency
+    "POTENTIAL": 0,
+    "GOLD": 0,
 
     # Sefirot Affinities
     "Eloki": 1,"Keter": 1, "Chokmah": 1, "Binah": 1,
@@ -46,25 +49,33 @@ character = {
     "Buffs": {},
 
     # Items
-    "Inventory": ["'Moss' {Common}", "'Stick' {Common}", "'Iron' {Uncommon}"],
+    "Inventory": [],
 
     # Progression
     "Location": None,
     "Coordinates": None,
-    "Been There": [[-967, 10]],
+    "End_of_Zone": {"sfz1": False, "sfz2": False, "sfz3": False},
+
+    ## SFZ2 Secrets Progression
+    "Buttons": {"Button A": False, "Button B": False, "Button C": False},
+    "Levers": {"Lever A": False, "Lever B": False, "Lever C": False},
 
     # Miscellaneous I
     "Shrines": {"armageddon_shrine": False},
 
-    "Chest": {"Chest_1": False},
-    "Barrel": {"Barrel_1": False},
-    "Corpse": {"Corpse_1": False},
-    "Cache": {"Cache_1": False},
+    ## Loot Drops
+    "Chest": {"Chest_1": False, "Chest_2": False, "Chest_3": False, "Chest_4": False, "Chest_5": False, "Chest_6": False},
+    "Barrel": {"Barrel_1": False, "Barrel_2": False, "Barrel_3": False, "Barrel_4": False, "Barrel_5": False},
+    "Corpse": {"Corpse_1": False, "Corpse_2": False, "Corpse_3": False, "Corpse_4": False, "Corpse_5": False, "Corpse_6": False, "Corpse_7": False, "Corpse_8": False},
+    "Cache": {"Cache_1": False, "Cache_2": False, "Cache_3": False, "Cache_4": False, "Cache_5": False},
     
-    "Lore": {"Lore_1": False, "Lore_2": False},
+    ## Lore Drops
+    "Lore": {"Lore_1": False, "Lore_2": False, "Lore_3": False, "Lore_4": False, "Lore_5": False, "Lore_6": False, "Lore_7": False, "Lore_8": False, "Lore_9": False, "Lore_10": False,
+             "Lore_11": False},
+
+    "Book Completions": {"book_0": [1, 2, 3, 10, 17], "book_1": [4, 7]},
 
     # Miscellaneous II
-    "End_of_Zone": {"sfz1": False},
     "Hidden_Bosses": {"The Builder": False},
     "Sponsor_Offer": {"The Farmer": False},
 
@@ -273,27 +284,30 @@ enemies = {"Training Dummy": {"Name": "Training Dummy", "Affinity": "None", "Hea
            "Pebblekin": {"Name": "Pebblekin", "Affinity": "Malkhut", "Health": 300, "Strength": 40, "Mana": 50, "Defense": 0},
            "Shadowkin": {"Name": "Shadowkin", "Affinity": "Malkhut", "Health": 250, "Strength": 60, "Mana": 100, "Defense": 0},
            "Forest Wisp": {"Name": "Forest Wisp", "Affinity": "Malkhut", "Health": 200, "Strength": 60, "Mana": 150, "Defense": 0},
-           "Doofakle": {"Name": "Doofakle", "Affinity": "Yesod", "Health": 250, "Strength": 100, "Mana": 100, "Defense": 0},
+           "Doofer": {"Name": "Doofer", "Affinity": "Yesod", "Health": 250, "Strength": 100, "Mana": 100, "Defense": 0},
            "Rock Golem": {"Name": "Rock Golem", "Affinity": "Yesod", "Health": 400, "Strength": 30, "Mana": 20, "Defense": 500},
+
+            # Right part of maze, can fly
+           "Xirce": {"Name": "Xirce", "Affinity": "Netzach", "Health": 550, "Strength": 100, "Mana": 200, "Defense": 10},
+            # Left part of maze, lotta strength
+            "Hycro": {"Name": "Hycro", "Affinity": "Hod", "Health": 500, "Strength": 250, "Mana": 100, "Defense": 50},
+
            "Stigless": {"Name": "Stigless", "Affinity": "Yesod", "Health": 350, "Strength": 20, "Mana": 50, "Defense": 10},
-           "Troph": {"Name": "Troph", "Affinity": "Netzach", "Health": 500, "Strength": 60, "Mana": 200, "Defense": 150},
+           "Trophus": {"Name": "Trophus", "Affinity": "Netzach", "Health": 500, "Strength": 60, "Mana": 200, "Defense": 150},
            "Packer": {"Name": "Packer", "Affinity": "Netzach", "Health": 450, "Strength": 55, "Mana": 150, "Defense": 100},
            "Krossad": {"Name": "Krossad", "Affinity": "Malkhut", "Health": 300, "Strength": 60, "Mana": 50, "Defense": 0},
            "Quickling": {"Name": "Quickling", "Affinity": "Netzach", "Health": 200, "Strength": 20, "Mana": 100, "Defense": 0},
            "Giant Snake": {"Name": "Giant Snake", "Affinity": "Malkhut", "Health": 350, "Strength": 40, "Mana": 50, "Defense": 0},
            "Little Prince of the Forest": {"Name": "Little Prince of the Forest", "Affinity": "Yesod", "Health": 300, "Strength": 30, "Mana": 150, "Defense": 0},
-           "One-eyed Birb": {"Name": "One-eyed Birb", "Affinity": "Netzach", "Health": 250, "Strength": 25, "Mana": 100, "Defense": 0},
-           "Diddler": {},
-           "Embark": {},
-           "Ionic": {},
-           "Kamacho": {}}
+}
 
 enemy_moves = {"Training Dummy": {"Stand": {"Damage": 0, "Cost": 0}},
                "Mossling": {"Swipe": {"Damage": enemies["Mossling"]["Strength"], "Cost": 5}, "Vines": {"Damage": enemies["Mossling"]["Mana"], "Cost": 5}},
                "Pebblekin": {"Rock Throw": {"Damage": enemies["Pebblekin"]["Strength"], "Cost": 5}, "Stone Slam": {"Damage": enemies["Pebblekin"]["Strength"], "Cost": 10}},
                "Forest Wisp": {"Spirit Bolt": {"Damage": enemies["Forest Wisp"]["Mana"] / 7, "Cost": 5}, "Forest Mist": {"Damage": enemies["Forest Wisp"]["Strength"] + enemies["Forest Wisp"]["Mana"] / 7, "Cost": 10}},
-               "Doofakle": {"Doofa Slam": {"Damage": enemies["Doofakle"]["Strength"], "Cost": 10}, "Doofa Blast": {"Damage": enemies["Doofakle"]["Mana"], "Cost": 15}},
+               "Doofer": {"Doofa Slam": {"Damage": enemies["Doofer"]["Strength"], "Cost": 10}, "Doofa Blast": {"Damage": enemies["Doofer"]["Mana"], "Cost": 15}},
                "Rock Golem": {"Rock Throw": {"Damage": enemies["Rock Golem"]["Strength"], "Cost": 5}, "Stone Slam": {"Damage": enemies["Rock Golem"]["Defense"] * 3, "Cost": 10}}}
+
 
 mini_bosses = {"The Giant Enemy Spider": {"Name": "The Giant Enemy Spider", "Affinity": "Malkhut", "Health": 500, "Strength": 75, "Mana": 300, "Defense": 100},
                "Night Hawk": {"Name": "Night Hawk", "Affinity": "Netzach", "Health": 450, "Strength": 70, "Mana": 250, "Defense": 80},
@@ -302,12 +316,12 @@ mini_bosses = {"The Giant Enemy Spider": {"Name": "The Giant Enemy Spider", "Aff
 
 mini_bosses_moves = {}
 
+
 bosses = {"Ouroboros Monstrositus": {"Name": "Ouroboros Monstrositus", "Affinity": "Malkhut", "Health": 2000, "Strength": 150, "Mana": 500, "Defense": 200},
           "The Rizzard of zO": {"Name": "The Rizzard of zO", "Affinity": "Yesod", "Health": 2500, "Strength": 200, "Mana": 1000, "Defense": 250},
           "Zorble Zob": {"Name": "Zorble Zob", "Affinity": "Netzach", "Health": 3000, "Strength": 250, "Mana": 1500, "Defense": 300},
           "Jay Jay": {"Name": "Jay Jay", "Affinity": "Netzach", "Health": 4500, "Strength": 300, "Mana": 2000, "Defense": 400},
           "Politician": {"Name": "Politician", "Affinity": "Hod", "Health": 5000, "Strength": 350, "Mana": 2500, "Defense": 500},
-          "Paker": {"Name": "Paker", "Affinity": "Hod", "Health": 7500, "Strength": 400, "Mana": 3000, "Defense": 500},
           "PENTIX": {"Name": "PENTIX", "Affinity": "Tiferet", "Health": 10000, "Strength": 450, "Mana": 3500, "Defense": 500},
           "Monarch of the Majestic": {"Name": "Monarch of the Majestic", "Affinity": "Tiferet", "Health": 15000, "Strength": 500, "Mana": 4000, "Defense": 500},
           "Kthululic": {"Name": "Kthululic", "Affinity": "Malkhut", "Health": 20000, "Strength": 600, "Mana": 5000, "Defense": 600}}
@@ -2542,9 +2556,6 @@ def eloki_decision(eloki_move_list, battle_character):
 
 
 
-
-
-
 # Achievements system, will be run after a lot of other functions
 def achievements():
     ...
@@ -2608,7 +2619,7 @@ def dot_effect(text):
             print(" " * (len(text) + 3), end="\r")
 
 
-#monologue effect
+# monologue effect
 def monologue(text):
     for line in text:
         type_text(line)
@@ -2726,63 +2737,7 @@ def three_choices(texta, textb, textc):
     clear_last_line()
     return x
 
-def rarity(chance, item):
-    if chance >= 0.25:
-                common = random.choice([f"COMMON FIND! You have obtained a {item}.", 
-                          f"COMMON FIND! You pick up a {item}.",
-                          f"COMMON FIND! You put a {item} into your inventory.",
-                          f"COMMON FIND! The chest reveals a {item}.",
-                          f"COMMON FIND! Inside the chest is a {item}."])
-                encounter_text(common)
-    elif 0.1 < chance < 0.25:
-                uncommon = random.choice([f"UNCOMMON FIND! You have obtained a {item}.", 
-                          f"UNCOMMON FIND! You pick up a {item}.",
-                          f"UNCOMMON FIND! You put a {item} into your inventory.",
-                          f"UNCOMMON FIND! The chest reveals a {item}.",
-                          f"UNCOMMON FIND! Inside the chest is a {item}."])
-                encounter_text(uncommon)
-    elif 0.03 < chance <= 0.1:
-                rare = random.choice([f"RARE FIND! You have obtained a {item}.", 
-                          f"RARE FIND! You pick up a {item}.",
-                          f"RARE FIND! You put a {item} into your inventory.",
-                          f"RARE FIND! The chest reveals a {item}.",
-                          f"RARE FIND! Inside the chest is a {item}."])
-                encounter_text(rare)
-    elif 0.01 < chance <= 0.03:
-                epic = random.choice([f"EPIC FIND! You have obtained a {item}.", 
-                          f"EPIC FIND! You pick up a {item}.",
-                          f"EPIC FIND! You put a {item} into your inventory.",
-                          f"EPIC FIND! The chest reveals a {item}.",
-                          f"EPIC FIND! Inside the chest is a {item}."])
-                encounter_text(epic)
-    elif 0.001 < chance <= 0.01:
-                legendary = random.choice([f"LEGENDARY FIND! You have obtained a {item}.", 
-                          f"LEGENDARY FIND! You pick up a {item}.",
-                          f"LEGENDARY FIND! You put a {item} into your inventory.",
-                          f"LEGENDARY FIND! The chest reveals a {item}.",
-                          f"LEGENDARY FIND! Inside the chest is a {item}."])
-                encounter_text(legendary)
-    elif 0.0005 < chance <= 0.001:
-                mythic = random.choice([f"MYTHIC FIND! You have obtained a {item}.", 
-                          f"MYTHIC FIND! You pick up a {item}.",
-                          f"MYTHIC FIND! You put a {item} into your inventory.",
-                          f"MYTHIC FIND! The chest reveals a {item}.",
-                          f"MYTHIC FIND! Inside the chest is a {item}."])
-                encounter_text(mythic)
-    elif 0.00005 < chance <= 0.0005:
-                divine = random.choice([f"DIVINE FIND! You have obtained a {item}.", 
-                          f"DIVINE FIND! You pick up a {item}.",
-                          f"DIVINE FIND! You put a {item} into your inventory.",
-                          f"DIVINE FIND! The chest reveals a {item}.",
-                          f"DIVINE FIND! Inside the chest is a {item}."])
-                encounter_text(divine)
-    else:
-                special = random.choice([f"SPECIAL FIND! You have obtained a {item}.", 
-                          f"SPECIAL FIND! You pick up a {item}.",
-                          f"SPECIAL FIND! You put a {item} into your inventory.",
-                          f"SPECIAL FIND! The chest reveals a {item}.",
-                          f"SPECIAL FIND! Inside the chest is a {item}."])
-                encounter_text(special)
+
 
 def battle_menu(battle_character):
     switch = True
@@ -2846,4 +2801,25 @@ def rarity_sort(some_list):
     return list_of_items
 
 
+def rarity(item):
+    item_rarity = item.split("{")[-1].replace("}", "").upper().strip()
+    text = random.choice([f"{item_rarity} FIND! You have obtained a {item}.", 
+                          f"{item_rarity} FIND! You pick up a {item}.",
+                          f"{item_rarity} FIND! You put a {item} into your inventory.",
+                          f"{item_rarity} FIND! You've retrived a {item}.",
+                          f"{item_rarity} FIND! You got the item: {item}."])
+    encounter_text(text)
+
+
+def item_did_nothing(selected_item):
+    x = random.choice([f"The item {selected_item} did nothing."],
+                              [f"The item {selected_item} had to effect on your surroundings or yourself."],
+                              f"The item {selected_item} produced no effect.")
+    type_text(x)
+    input_to_continue()
+
+
+def input_to_clear():
+    input_to_continue()
+    clear()
 

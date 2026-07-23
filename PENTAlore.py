@@ -1,21 +1,98 @@
 import time
 import random
-from PENTAutilities import clear, monologue, type_text, quick_text, quick_monologue, question_input, input_to_continue
+from PENTAutilities import clear, monologue, type_text, quick_text, quick_monologue, question_input, input_to_continue, character, input_to_clear
+
+
+# Add descriptions to the books
+books = {"book_0": {"Name": "'Houlester's Guide to the 10 Sefirots' {DAMAGED}",
+                    "Description": "A damaged book that explains pretty much everything to do about the Sefirots."},
+         "book_1": {"Name": "'The Numbered Emperors' {DAMAGED}"},
+         "book_2": {"Name": "'An Intensive Guide to Malkhut' {COMPLETE}"},
+         "book_3": {"Name": "'The Mechanics of Buffs' {DAMAGED}"},
+         "book_4": {"Name": "'Mechanisms of the Keys' {COMPLETE}"},
+         "book_5": {"Name": "'Anatomy of the Hycro' {COMPLETE}"},
+         "book_6": {"Name": "'The Most Iconic Weapons of The Realm' {DAMAGED}"},
+         "book_7": {"Name": "'Terms & Conditions of the Duel' {DAMAGED}"}
+         }
+
+
+journals = {"journal_0": {"Name": "'Jess' Journal' {DAMAGED}", "Description": "A damaged journal that contains the thoughts and experiences of a person named Jess."},
+            "journal_1": {"Name": "'Dr. Victor's Journal' {DAMAGED}", "Description": "A damaged journal that contains the thoughts and experiences of the doctor Victor."},
+            "journal_2": {"Name": "'Dr. Lucien's Journal' {DAMAGED}", "Description": "A damaged journal that contains the thoughts and experiences of the doctor Lucien."},
+            "journal_3": {"Name": "'Tobias' Journal {DAMAGED}", "Description": "A damaged journal that contains the thoughts and experiences of a person named Tobias."}}
+
+
 
 def lore(lore_item):
+    # Books
     if lore_item == "'Houlester's Guide to the 10 Sefirots' {DAMAGED}":
         book_0()
     elif lore_item == "'The Numbered Emperors' {DAMAGED}":
         book_1()
     elif lore_item == "'An Intensive Guide to Malkhut' {COMPLETE}":
         book_2()
+    elif lore_item == "'The Mechanics of Buffs' {DAMAGED}":
+        book_3()
+    elif lore_item == "'Mechanisms of the Keys' {COMPLETE}":
+        book_4()
+    elif lore_item == "'Anatomy of the Hycro' {COMPLETE}":
+        book_5()
+    elif lore_item == "'The Most Iconic Weapons of The Realm' {DAMAGED}":
+        book_6()
+    elif lore_item == "'Terms & Conditions of the Duel' {DAMAGED}":
+        book_7()
+
+    # Journals
     elif lore_item == "'Jess' Journal' {DAMAGED}":
         journal_0()
+    elif lore_item == "'Dr. Victor's Journal' {DAMAGED}":
+        journal_1()
+    elif lore_item == "'Dr. Lucien's Journal' {DAMAGED}":
+        journal_2()
+    elif lore_item == "'Tobias' Journal' {DAMAGED}":
+        journal_3()
+
+
+def chapter_completion(book_number, chapter_number):
+    global character
+    if chapter_number in character["Book Completions"][book_number]:
+        character["Book Completions"][book_number].remove(chapter_number)
+    else:
+        pass
+
+
+def check_book(book_number):
+    global character
+    if len(character["Book Completions"][book_number]) == 0:
+        text = ["Congratulations!",
+                f"You have completed the book: {books[book_number]}",
+                "You wisdom has increased!"]
+        monologue(text)
+        character["Wisdom"] += 55
+        
+        if book_number == 'book_0':
+            type_text("You feel some of your sefirot affinities rising.")
+            character["Malkhut"] += 1
+            character["Chokmah"] += 1
+            input_to_clear()
+            return
+
+        elif book_number == 'book_1':
+            ...
+
+
+
+    else:
+        pass
+
 
 
 def book_0():
+    global character
+    book_number = "book_0"
     while True:
         clear()
+        check_book(book_number)
         x = ["╔═══════ BOOK 'Houlester's Guide to the 10 Sefirots' {DAMAGED} ═══════╗",
                         "Chapter 1: The Sefirots",
                         "Chapter 2: Mana",
@@ -47,6 +124,7 @@ def book_0():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 1)
             continue
         elif x == "2":
             clear()
@@ -61,6 +139,7 @@ def book_0():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 1)
             continue
         elif x == "3":
             clear()
@@ -75,6 +154,7 @@ def book_0():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 1)
             continue
         elif x == "10":
             clear()
@@ -89,6 +169,7 @@ def book_0():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 1)
             continue
         elif x == "17":
             clear()
@@ -101,6 +182,7 @@ def book_0():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 1)
             continue
         elif x == "b":
             break
@@ -117,8 +199,11 @@ def book_0():
             continue
 
 def book_1():
+    global character
+    book_number = 'book_1'
     while True:
         clear()
+        check_book(book_number)
         x = ["╔═══════ BOOK 'The Numbered Emperors' {DAMAGED} ═══════╗",
              "Unreadable Parts",
              "Chapter 4: The Fourth Emperor",
@@ -136,11 +221,12 @@ def book_1():
                     "and is known for his love of nature and animals.",
                     "He is also the only Emperor who has never been seen by the public.",
                     "The Fourth Emperor is said to have a deep connection with the forest.",
-                    "Yet, he is also regarded as one of the more powerful Emperors."]
+                    "Yet, for some reason, he is also regarded as one of the more powerful Emperors."]
             monologue(text)
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 4)
             continue
         elif x == "7":
             clear()
@@ -156,6 +242,7 @@ def book_1():
             print("")
             type_text("The rest of the chapter is unreadable.")
             input_to_continue()
+            chapter_completion(book_number, 7)
             continue
         elif x == "b":
             break
@@ -164,6 +251,7 @@ def book_1():
             input_to_continue()
             continue
 
+# Do these next, finish the books, add the functions chapter_completion and check_book
 def book_2():
     while True:
         clear()
@@ -174,6 +262,41 @@ def book_2():
              "Chapter 4: Malkhut and the World",
              "Chapter 5: Deories & Spekulations"]
 
+        quick_monologue(x)
+
+
+
+def book_3():
+    while True:
+        clear()
+        x = ["╔═══════ BOOK 'The Mechanics of Buffs' {DAMAGED} ═══════╗",
+                        "Chapter 1: What are Buffs?",
+                        "Chapter 2: Mana",
+                        "Chapter 3: Malkhut",
+                        "Unreadable Parts",
+                        "Chapter 10: Chokmah",
+                        "Unreadable Parts",
+                        "Chapter 17: The Gods",
+                        "Unreadable Parts",
+                        "Back (b)"]
+        quick_monologue(x)
+        print("")
+        x = question_input("Which Chapter would you like to read? ").strip().lower()
+        if x == "1":
+            ...
+
+
+def book_4():
+    ...
+
+def book_5():
+    ...
+
+def book_6():
+    ...
+
+def book_7():
+    ...
 
 
 def journal_0():
@@ -200,7 +323,7 @@ def journal_0():
                     "Now I'm living with Mom and Dad.",
                     "All alone.",
                     "In this forest.",
-                    "At least Dad started a farm nearby..."]
+                    "At least Dad started a farm in the northwest part of the forest."]
             monologue(text)
             print("")
             type_text("The rest of the entry is unreadable.")
@@ -230,4 +353,18 @@ def journal_0():
             input_to_continue()
             continue
 
+
+def journal_1():
+    while True:
+        clear()
+
+
+def journal_2():
+    while True:
+        clear()
+
+
+def journal_3():
+    while True:
+        clear()
 

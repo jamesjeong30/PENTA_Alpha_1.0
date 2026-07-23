@@ -405,8 +405,6 @@ def linkage(mana_cost, battle_character):
 
 
 
-
-
 def astral_convergence(battle_character):
     clear()
     a = question_input("Input any key to activate the {EX} rank skill {Astral Convergence}: ")
@@ -506,7 +504,6 @@ def astral_convergence(battle_character):
     input_to_continue()
     clear()
     return battle_character
-
 
 
 
@@ -1861,11 +1858,11 @@ def battle(encountered_enemies):
         character["Defense"] = character["Defense"] + character["Stat Inheritance"] * enemies[enemy]["Defense"]
         character["Health"] = character["Health"] + character["Stat Inheritance"] * enemies[enemy]["Health"]
         character["Mana"] = character["Mana"] + character["Stat Inheritance"] * enemies[enemy]["Mana"]
-        x = random.choice([f"Your stat inheritance of {character['Stat Inheritance']*100}% has increased your stats from defeating the {enemy}!",
-                          f"Defeating the {enemy} has granted you a stat inheritance of {character['Stat Inheritance']*100}% to your stats!",
-                          f"You have gained a stat inheritance of {character['Stat Inheritance']*100}% to your stats by overcoming the {enemy}!",
-                          f"Your stats have been boosted by a stat inheritance of {character['Stat Inheritance']*100}% from vanquishing the {enemy}!",
-                          f"By besting the {enemy}, you have acquired a stat inheritance of {character['Stat Inheritance']*100}% to your stats!"])
+        x = random.choice([f"Your stat inheritance of {character['Stat Inheritance']*100}% has increased your stats from defeating the [{enemy}]!",
+                          f"Defeating the [{enemy}] has granted you a stat inheritance of {character['Stat Inheritance']*100}% to your stats!",
+                          f"You have gained a stat inheritance of {character['Stat Inheritance']*100}% to your stats by overcoming the [{enemy}]!",
+                          f"Your stats have been boosted by a stat inheritance of {character['Stat Inheritance']*100}% from vanquishing the [{enemy}]!",
+                          f"By besting the [{enemy}], you have acquired a stat inheritance of {character['Stat Inheritance']*100}% to your stats!"])
         encounter_text(x)
     
     encounter_text("You have been restored back to full health and mana!")
@@ -1880,5 +1877,3 @@ def battle(encountered_enemies):
 
 
 
-
-    
